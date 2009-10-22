@@ -1,0 +1,13 @@
+# Configuration settings for Tokyo Tyrant.
+
+PORT="1978"
+THREADS="8"
+TIMEOUT="0"
+OPTIONS=""
+
+# Hash database (default)
+DATABASE="$basedir/casket.tch#bnum=1000000"
+# B+ tree database
+#DATABASE="$basedir/casket.tcb#bnum=1000000"
+# Table database
+#DATABASE="$basedir/casket.tct#bnum=1000000"

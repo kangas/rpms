@@ -1,0 +1,9 @@
+/var/log/tokyotyrant/*.log {
+    missingok
+    notifempty
+    size 30k
+    weekly
+    postrotate
+        /bin/kill -HUP `cat /var/run/tokyotyrant.pid 2> /dev/null` 2> /dev/null || true
+    endscript
+}

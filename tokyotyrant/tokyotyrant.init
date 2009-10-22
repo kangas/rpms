@@ -1,0 +1,102 @@
+#!/bin/sh
+#
+# ttserver - this script starts and stops the tokyotyrant server
+#
+# chkconfig:   - 64 36
+# description: Tokyo Tyrant is a network interface to the DBM called Tokyo
+#              Cabinet.
+# processname: ttserver
+# config:      /etc/sysconfig/tokyotyrant
+# pidfile:     /var/run/tokyotyrant/tokyotyrant.pid
+
+# Source function library
+. /etc/rc.d/init.d/functions
+
+basedir="/var/lib/tokyotyrant"
+bin="/usr/bin/ttserver"
+config="/etc/sysconfig/tokyotyrant"
+lockfile="/var/lock/subsys/tokyotyrant"
+pidfile="/var/run/tokyotyrant/tokyotyrant.pid"
+prog="Tokyo Tyrant"
+
+PORT="1978"
+THREADS="8"
+TIMEOUT="0"
+LOG="/var/log/tokyotyrant/ttserver.log"
+DATABASE="$basedir/casket.tch#bnum=1000000"
+MAX_CONNECTIONS="65535"
+OPTIONS=""
+
+[ -e "$config" ] && . "$config"
+
+start() {
+    if [ -n "$MAX_CONNECTIONS" ] ; then
+        ulimit -n "$MAX_CONNECTIONS" >/dev/null 2>&1
+    fi
+    echo -n $"Starting $prog: "
+    daemon --user=tokyotyrant $bin -dmn -pid "$pidfile" -port "$PORT" -thnum "$THREADS" -tout "$TIMEOUT" -log "$LOG" "$DATABASE" $OPTIONS
+    retval=$?
+    echo
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc $bin
+    retval=$?
+    echo
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+rh_status() {
+    status ttserver
+}
+
+rh_status_q() {
+    rh_status &> /dev/null
+}
+
+reload() {
+    echo "Not implemented"
+}
+
+force_reload() {
+    echo "Not implemented"
+}
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1  
+        ;;  
+    stop)
+        rh_status_q || exit 0
+        $1  
+        ;;  
+    restart)
+        $1  
+        ;;  
+    reload)
+        rh_status_q || exit 7
+        $1  
+        ;;  
+    force-reload)
+        force_reload
+        ;;  
+    status)
+        rh_status
+        ;;  
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;  
+    *)  
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?

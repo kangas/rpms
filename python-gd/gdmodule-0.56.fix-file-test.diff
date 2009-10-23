@@ -1,0 +1,12 @@
+diff -up gdmodule-0.56/Setup.py.orig gdmodule-0.56/Setup.py
+--- gdmodule-0.56/Setup.py.orig	2009-09-29 09:34:18.430232965 -0600
++++ gdmodule-0.56/Setup.py	2009-09-29 09:35:06.864490494 -0600
+@@ -40,7 +40,7 @@ def remove(itm, lst):
+ # Unixoid OS's I will just look for the usual suspects.
+ 
+ libdirs = dirtest([
+-    "/usr/local/lib", "/sw/lib", "/usr/lib",
++    "/usr/local/lib", "/sw/lib", "/usr/lib", "/usr/lib64",
+     "/usr/lib/X11", "/usr/X11R6/lib",
+     "/opt/gnome/lib",
+ ])

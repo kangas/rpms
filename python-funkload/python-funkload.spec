@@ -9,7 +9,7 @@ Summary:        Function and load web testing
 
 Group:          Development/Languages
 License:        GPLv2
-URL:            http://funkload.nuxeo.org/
+URL:            http://funkload.nuxeo.org
 Source0:        http://pypi.python.org/packages/source/f/funkload/%{upstream_name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 

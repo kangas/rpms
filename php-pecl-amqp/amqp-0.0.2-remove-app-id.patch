@@ -1,0 +1,14 @@
+diff -up amqp-0.0.2/amqp.c.orig amqp-0.0.2/amqp.c
+--- amqp-0.0.2/amqp.c.orig	2009-08-19 15:51:30.411527181 -0600
++++ amqp-0.0.2/amqp.c	2009-08-19 15:51:45.993571492 -0600
+@@ -406,10 +406,6 @@ PHP_FUNCTION(amqp_basic_publish)
+                 props._flags += AMQP_BASIC_USER_ID_FLAG;
+                 props.user_id = amqp_cstring_bytes(Z_STRVAL_PP(opt));
+             }
+-            if (KEYMATCH(key, "app_id")) {
+-                props._flags += AMQP_BASIC_APP_ID_FLAG;
+-                props.app_id = amqp_cstring_bytes(Z_STRVAL_PP(opt));
+-            }
+             if (KEYMATCH(key, "cluster_id")) {
+                 props._flags += AMQP_BASIC_CLUSTER_ID_FLAG;
+                 props.cluster_id = amqp_cstring_bytes(Z_STRVAL_PP(opt));

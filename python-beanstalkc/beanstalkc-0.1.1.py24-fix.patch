@@ -1,0 +1,15 @@
+diff -up beanstalkc-0.1.1/setup.py.orig beanstalkc-0.1.1/setup.py
+--- beanstalkc-0.1.1/setup.py.orig	2009-11-10 12:03:30.523806870 -0700
++++ beanstalkc-0.1.1/setup.py	2009-11-10 12:03:52.730048843 -0700
+@@ -3,8 +3,10 @@ import os
+ from setuptools import setup
+ from beanstalkc import __version__ as version
+ 
++pkg_version = version
+ git_version = os.popen('git describe --tags --abbrev=6').read().strip()[7:]
+-pkg_version = version if not git_version else version + '.dev' + git_version
++if git_version:
++    pkg_version += '.dev' + git_version
+ 
+ setup(
+     name='beanstalkc',

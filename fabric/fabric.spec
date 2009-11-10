@@ -1,16 +1,16 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-%define pre_release b1
+%define package_name Fabric
 
 Name:           fabric
-Version:        0.9
-Release:        0.1.%{pre_release}%{?dist}
+Version:        0.9.0
+Release:        1%{?dist}
 Summary:        A simple Pythonic remote deployment tool
 
 Group:          Applications/System
-License:        GPLv2+
-URL:            http://www.nongnu.org/fab
-Source0:        http://git.fabfile.org/cgit.cgi/fabric/snapshot/%{name}-%{version}%{pre_release}.tar.gz
+License:        BSD
+URL:            http://www.fabfile.org/
+Source0:        http://code.fabfile.org/projects/fabric/files/%{package_name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch
@@ -25,26 +25,30 @@ files to, and run shell commands on, a number of servers in parallel or
 serially.
 
 %prep
-%setup -q -n %{name}-%{version}%{pre_release}
+%setup -q -n %{package_name}-%{version}
 
 %build
 %{__python} setup.py build
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
+%{__rm} -fr %{buildroot}%{python_sitelib}/paramiko
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE README TODO
+%doc AUTHORS FAQ LICENSE README
 %{_bindir}/fab
 %{python_sitelib}/fabric
-%{python_sitelib}/Fabric-*.egg-info
+%{python_sitelib}/%{package_name}*%{version}*.egg-info
 
 %changelog
+* Mon Nov 09 2009 Silas Sewell <silas@sewell.ch> - 0.9.0-1
+- Update to 0.9.0
+
 * Thu Aug 27 2009 Silas Sewell <silas@sewell.ch> - 0.9-0.1.b1
 - Update to latest snapshot
 

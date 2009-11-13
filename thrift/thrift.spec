@@ -16,11 +16,11 @@
 %{!?ruby_sitearch: %global ruby_sitearch %(ruby -rrbconfig -e "puts Config::CONFIG['sitearchdir']")}
 
 %define global_version 0.2
-%define snapshot 795861
+%define snapshot 835538
 
 Name:             thrift
 Version:          %{global_version}
-Release:          0.20090720svn%{snapshot}%{?dist}
+Release:          0.20091112svn%{snapshot}%{?dist}
 Summary:          A multi-language RPC and serialization framework
 
 Group:            System Environment/Libraries
@@ -139,10 +139,11 @@ Summary:          Java bindings for %{name}
 Group:            Development/Libraries
 BuildRequires:    ant
 BuildRequires:    jakarta-commons-lang
-BuildRequires:    java-devel >= 1.5.0
-BuildRequires:    log4j
+BuildRequires:    java-1.6.0-openjdk-devel
+BuildRequires:    slf4j
 Requires:         jakarta-commons-lang
-Requires:         log4j
+Requires:         java-1.6.0-openjdk
+Requires:         slf4j
 
 %description java
 Java bindings for %{name}.
@@ -150,7 +151,7 @@ Java bindings for %{name}.
 %package javadoc
 Summary:          Javadoc for %{name}-java
 Group:            Documentation
-BuildRequires:    java-javadoc
+BuildRequires:    java-1.6.0-openjdk-javadoc
 
 %description javadoc
 Javadoc for %{name}.
@@ -188,6 +189,7 @@ Summary:          Ruby bindings for %{name}
 Group:            Development/Libraries
 BuildRequires:    ruby
 BuildRequires:    ruby-devel
+Requires:         ruby(abi) = 1.8
 
 %description ruby
 Ruby bindings for %{name}.
@@ -216,7 +218,7 @@ popd
 
 # Build Java
 pushd lib/java
-ant dist javadoc -lib %{_javadir} -Dnoivy=
+ant dist javadoc -lib %{_javadir} -lib %{_javadir}/slf4j -Dnoivy=
 popd
 
 # Build Perl
@@ -234,8 +236,8 @@ popd
 
 # Build Ruby
 pushd lib/rb
-%{__ruby} setup.rb config
-%{__ruby} setup.rb setup
+ruby setup.rb config
+ruby setup.rb setup
 popd
 
 %install
@@ -418,6 +420,9 @@ fi
 %{ruby_sitelib}/thrift*
 
 %changelog
+* Thu Nov 12 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20091112svn835538
+- Update to latest snapshot
+
 * Mon Jul 20 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20090720svn795861
 - Update to latest snapshot
 

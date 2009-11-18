@@ -1,13 +1,10 @@
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-%define snapshot 795861
-
-# Java
-%define with_gcj %{!?_without_gcj:1}%{?_without_gcj:0}
+%define snapshot 835538
 
 Name:             fb303
 Version:          0.2
-Release:          0.20090501svn%{snapshot}%{?dist}
+Release:          0.20091117svn%{snapshot}%{?dist}
 Summary:          Facebook Bassline
 
 Group:            Development/Libraries
@@ -18,8 +15,6 @@ URL:              http://incubator.apache.org/thrift
 Source0:          %{name}-%{version}.tar.gz
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-Provides:         %{name} = %{version}-%{release}
-
 BuildRequires:    automake
 BuildRequires:    byacc
 BuildRequires:    boost-devel >= 1.33.1
@@ -27,7 +22,7 @@ BuildRequires:    flex
 BuildRequires:    libevent-devel
 BuildRequires:    libtool
 BuildRequires:    thrift
-BuildRequires:    thrift-devel
+BuildRequires:    thrift-cpp-devel
 BuildRequires:    zlib-devel
 
 %description
@@ -47,8 +42,11 @@ developing applications that use %{name}.
 Summary:          Java bindings for %{name}
 Group:            Development/Libraries
 BuildRequires:    ant 
-BuildRequires:    java-devel
+BuildRequires:    java-1.6.0-openjdk-devel
 BuildRequires:    jpackage-utils
+BuildRequires:    thrift-java
+Requires:         java-1.6.0-openjdk
+Requires:         thrift-java
 
 %description java
 Java bindings for %{name}.
@@ -94,8 +92,7 @@ sed -i 's/shareddir = lib/shareddir = ${prefix}\/lib/g' cpp/Makefile
 
 # Install Java
 pushd java/
-ant -Dthrift_home=/usr
-find .
+ant install -Dthrift_home=%{_prefix} -Ddist.dir=%{buildroot}%{_prefix} -Ddist.lib.dir=%{buildroot}%{_javadir} -lib %{_javadir} -lib %{_javadir}/slf4j -Dnoivy=
 popd
 
 # Install PHP
@@ -116,18 +113,18 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc README
 %{_datadir}/fb303
-%{_libdir}/*.so.*
+%{_libdir}/*.so
 
 %files devel
 %defattr(-,root,root,-)
 %doc README
 %{_includedir}/thrift/fb303
-%{_libdir}/*.so
+#%{_libdir}/*.so
 
 %files java
 %defattr(-,root,root,-)
 %doc README
-%{_javadir}/libthrift.jar
+%{_javadir}/libfb303.jar
 
 %files php
 %defattr(-,root,root,-)
@@ -142,6 +139,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/%{name}-*.egg-info
 
 %changelog
+* Tue Nov 17 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20091117svn835538
+- Update to thrift snapshot
+
 * Tue Jul 21 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20090721svn795861
 - Update to latest snapshot
 

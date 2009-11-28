@@ -1,14 +1,12 @@
 Name:           lxc
-Version:        0.6.3
-Release:        2%{?dist}
+Version:        0.6.4
+Release:        1%{?dist}
 Summary:        Linux Resource Containers
 
 Group:          Applications/System
 License:        LGPLv2+
 URL:            http://lxc.sourceforge.net
 Source0:        http://lxc.sourceforge.net/download/lxc/%{name}-%{version}.tar.gz
-# Upstream commit 90e0a869ac5f3a889487126568f1d3c7c34b7046
-Patch0:         lxc-0.6.3.netlink-fix.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  automake
@@ -45,13 +43,22 @@ overhead of full virtualization.
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
+%package        doc
+Summary:        Documentation for %{name}
+Group:          Documentation
+Requires:       %{name} = %{version}-%{release}
+
+%description    doc
+This package contains documentation for %{name}.
+
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 ./autogen.sh
-%configure F77=no --enable-static=no
+%configure F77=no
+# Fix binary-or-shlib-defines-rpath error
+%{__sed} -i '/AM_LDFLAGS = -Wl,-E -Wl,-rpath -Wl,$(libdir)/d' src/lxc/Makefile.in
 %{__make} %{?_smp_mflags}
 
 %install
@@ -69,8 +76,6 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING README
-%dir %{_sysconfdir}/%{name}
-%config(noreplace) %{_sysconfdir}/%{name}/*
 %{_bindir}/%{name}-*
 %{_libexecdir}/%{name}-init
 %{_mandir}/man*/%{name}*
@@ -78,7 +83,7 @@ rm -rf %{buildroot}
 %files libs
 %defattr(-,root,root,-)
 %doc COPYING
-%{_libdir}/liblxc-%{version}.so
+%{_libdir}/liblxc.so.*
 
 %files devel
 %defattr(-,root,root,-)
@@ -87,7 +92,15 @@ rm -rf %{buildroot}
 %{_includedir}/*
 %{_libdir}/liblxc.so
 
+%files doc
+%defattr(-,root,root,-)
+%{_docdir}/%{name}
+
 %changelog
+* Fri Nov 27 2009 Silas Sewell <silas@sewell.ch> - 0.6.4-1
+- Update to latest release
+- Add documentation sub-package
+
 * Mon Jul 27 2009 Silas Sewell <silas@sewell.ch> - 0.6.3-2
 - Apply patch for rawhide kernel
 

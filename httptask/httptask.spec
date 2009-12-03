@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        An HTTP interface to various job and queueing systems
 
 Group:          Development/Languages
-License:        ASL 2.0
+License:        MIT
 URL:            http://github.com/silas/httptask
 Source0:        %{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -37,7 +37,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE
+%doc LICENSE NOTICE README
 %{_bindir}/%{name}
 %{python_sitelib}/%{name}
 %{python_sitelib}/%{name}-%{version}-*.egg-info

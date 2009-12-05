@@ -1,6 +1,6 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-%define pre_release pre6
+%global pre_release pre6
 
 Name:           lamson
 Version:        1.0

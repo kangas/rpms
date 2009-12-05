@@ -64,11 +64,11 @@ find examples -name '*.py' -exec chmod 0644 {} \;
 %{__python} setup.py build
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)

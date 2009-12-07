@@ -1,10 +1,10 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-%global pre_release pre6
+%global pre_release pre7
 
 Name:           lamson
 Version:        1.0
-Release:        0.2.%{pre_release}%{?dist}
+Release:        0.3.%{pre_release}%{?dist}
 Summary:        A Python mail server framework
 
 Group:          Development/Languages
@@ -82,6 +82,9 @@ find examples -name '*.py' -exec chmod 0644 {} \;
 %doc examples/ doc/lamsonproject.org/output
 
 %changelog
+* Sat Dec 05 2009 Silas Sewell <silas@sewell.ch> - 1.0-0.3.pre7
+- Update to 1.0pre7
+
 * Sat Dec 05 2009 Silas Sewell <silas@sewell.ch> - 1.0-0.2.pre6
 - Update to 1.0pre6
 - Add doc subpackage

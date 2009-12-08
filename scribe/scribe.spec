@@ -1,22 +1,22 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
+%global config_opts --disable-static --with-thriftpath=%{_prefix} --with-fb303path=%{_prefix} --with-boost-system=boost_system --with-boost-filesystem=boost_filesystem
+
 Name:             scribe
-Version:          2.01
+Version:          2.1
 Release:          1%{?dist}
 Summary:          A server for aggregating log data streamed in real time
 
 Group:            Development/Libraries
 License:          ASL 2.0
 URL:              http://developers.facebook.com/scribe
-Source0:          http://dl.sourceforge.net/sourceforge/scribeserver/%{name}-version-%{version}.tar.gz
+Source0:          http://cloud.github.com/downloads/facebook/scribe/scribe-%{version}.tar.gz
 Source1:          scribed.init
 Source2:          scribed.sysconfig
-Patch0:           scribe.2.01.patch
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:    automake
-BuildRequires:    boost-devel
-BuildRequires:    boost-devel >= 1.33
+BuildRequires:    boost-devel >= 1.36
 BuildRequires:    fb303-devel
 BuildRequires:    libevent-devel
 BuildRequires:    thrift
@@ -42,51 +42,41 @@ Requires:         fb303-python
 Python bindings for %{name}.
 
 %prep
-%setup -q -n %{name}
-
-# Make scribe work with Boost 1.33
-%patch0 -p1
-
-# Remove subversion directories
-find . -type d -name .svn | xargs rm -fr
+%setup -q
 
 %build
-%define configoptions --disable-static --with-thriftpath=%{_prefix} --with-fb303path=%{_prefix} --with-boost-system=boost_system --with-boost-filesystem=boost_filesystem
-./bootstrap.sh %{configoptions}
-%configure %{configoptions}
+./bootstrap.sh %{config_opts}
+%configure %{config_opts}
 %{__make} %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %{__make} DESTDIR=%{buildroot} install
 
 # Install manually
-install -D -m 755 ./src/libscribe.so %{buildroot}%{_libdir}/libscribe.so
-install -D -m 755 ./examples/scribe_cat %{buildroot}%{_bindir}/scribe_cat
-install -D -m 755 ./examples/scribe_ctrl %{buildroot}%{_sbindir}/scribe_ctrl
-install -D -m 644 ./examples/example1.conf %{buildroot}%{_sysconfdir}/scribed/default.conf
-install -D -m 755 %{SOURCE1} %{buildroot}%{_sysconfdir}/rc.d/init.d/scribed
-install -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/scribed
+%{__install} -D -m 755 ./examples/scribe_cat %{buildroot}%{_bindir}/scribe_cat
+%{__install} -D -m 755 ./examples/scribe_ctrl %{buildroot}%{_bindir}/scribe_ctrl
+%{__install} -D -m 755 ./src/libscribe.so %{buildroot}%{_libdir}/libscribe.so
+%{__install} -D -m 644 ./examples/example1.conf %{buildroot}%{_sysconfdir}/scribed/default.conf
+%{__install} -D -m 755 %{SOURCE1} %{buildroot}%{_sysconfdir}/rc.d/init.d/scribed
+%{__install} -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/scribed
 
-# Clean and fixes
-rm ./examples/scribe_*
-mv %{buildroot}%{_bindir}/scribed %{buildroot}%{_sbindir}/scribed
-find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null \;
+# Remove scripts
+%{__rm} ./examples/scribe_*
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE README.BUILD examples/
+%doc LICENSE examples/
 %config(noreplace) %{_sysconfdir}/scribed/default.conf
 %config(noreplace) %{_sysconfdir}/sysconfig/scribed
+%{_bindir}/scribed
+%{_libdir}/libscribe.so
 %{_sysconfdir}/rc.d/init.d/scribed
-%{_sbindir}/scribed
-%{_sbindir}/scribe_ctrl
-
-%{_libdir}/*.so
+%{_bindir}/scribe_ctrl
 
 %files python
 %defattr(-,root,root,-)
@@ -105,5 +95,8 @@ if [ $1 = 0 ]; then
 fi
 
 %changelog
+* Mon Dec 07 2009 Silas Sewell <silas@sewell.ch> - 2.1-1
+- Update to 2.1
+
 * Fri May 01 2009 Silas Sewell <silas@sewell.ch> - 2.0.1-1
 - Initial build

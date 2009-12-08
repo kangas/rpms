@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # scribed - this script starts and stops the scribed daemon
 #
@@ -14,8 +14,8 @@
 # Source function library
 . /etc/rc.d/init.d/functions
 
-run="/usr/sbin/scribed"
-run_ctrl="/usr/sbin/scribe_ctrl"
+run="/usr/bin/scribed"
+run_ctrl="/usr/bin/scribe_ctrl"
 prog=$(basename $run)
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog

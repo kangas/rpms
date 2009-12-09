@@ -1,3 +1,13 @@
+%if 0%{?fedora} > 11
+%global with_ghc 1
+%global with_java 1
+%global with_php 1
+%else
+%global with_ghc 0
+%global with_java 0
+%global with_php 0
+%endif
+
 # Erlang
 %global erlangdir %{_libdir}/erlang
 
@@ -15,12 +25,12 @@
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e "puts Config::CONFIG['sitelibdir']")}
 %{!?ruby_sitearch: %global ruby_sitearch %(ruby -rrbconfig -e "puts Config::CONFIG['sitearchdir']")}
 
-%define global_version 0.2
-%define snapshot 835538
+%global global_version 0.2
+%global snapshot 835538
 
 Name:             thrift
 Version:          %{global_version}
-Release:          0.20091112svn%{snapshot}%{?dist}
+Release:          0.4.20091112svn%{snapshot}%{?dist}
 Summary:          A multi-language RPC and serialization framework
 
 Group:            System Environment/Libraries
@@ -80,6 +90,7 @@ BuildRequires:    erlang
 %description erlang
 Erlang bindings for %{name}.
 
+%if 0%{?with_ghc}
 %package ghc
 Version:          0.1.0
 Summary:          Haskell bindings for %{name}
@@ -133,7 +144,9 @@ Requires:         ghc-prof = %{ghc_version}
 This package contains profiling libraries for %{name}-ghc
 built for ghc-%{ghc_version}.
 %endif
+%endif
 
+%if %{with_java}
 %package java
 Summary:          Java bindings for %{name}
 Group:            Development/Libraries
@@ -155,11 +168,16 @@ BuildRequires:    java-1.6.0-openjdk-javadoc
 
 %description javadoc
 Javadoc for %{name}.
+%endif
 
 %package perl
 Summary:          Perl bindings for %{name}
 Group:            Development/Libraries
+%if 0%{?fedora} > 6
 BuildRequires:    perl-devel
+%else
+BuildRequires:    perl
+%endif
 Requires:         perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires:         perl(Bit::Vector)
 Requires:         perl(Class::Accessor)
@@ -167,14 +185,20 @@ Requires:         perl(Class::Accessor)
 %description perl
 Perl bindings for %{name}.
 
+%if 0%{?with_php}
 %package php
 Summary:          PHP bindings for %{name}
 Group:            Development/Libraries
 BuildRequires:    php-devel
-Requires:         php-common
+%if 0%{?php_zend_api}
+BuildRequires:    php-devel
+Requires:         php(zend-abi) = %{php_zend_api}
+Requires:         php(api) = %{php_core_api}
+%endif
 
 %description php
 PHP bindings for %{name}.
+%endif
 
 %package python
 Summary:          Python bindings for %{name}
@@ -209,17 +233,21 @@ sed -i '/#/d;/^$/d' lib/hs/Setup.lhs
 %{__make} %{?_smp_mflags}
 
 # Build Haskell
+%if 0%{?with_ghc}
 pushd lib/hs
 %cabal_configure --ghc %{!?without_prof:-p}
 %cabal build
 %cabal haddock
 %ghc_gen_scripts
 popd
+%endif
 
+%if %{with_java}
 # Build Java
 pushd lib/java
 ant dist javadoc -lib %{_javadir} -lib %{_javadir}/slf4j -Dnoivy=
 popd
+%endif
 
 # Build Perl
 pushd lib/perl
@@ -228,11 +256,13 @@ perl Makefile.PL
 popd
 
 # Build PHP
+%if 0%{?with_php}
 pushd lib/php/src/ext/thrift_protocol
 phpize
 %configure
-make %{?_smp_mflags}
+%{__make} %{?_smp_mflags}
 popd
+%endif
 
 # Build Ruby
 pushd lib/rb
@@ -241,15 +271,15 @@ ruby setup.rb setup
 popd
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 # Install everything not listed below
-make DESTDIR=%{buildroot} install
+%{__make} DESTDIR=%{buildroot} install
 # Remove "la" files
 find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 
 # Fix non-standard-executable-perm
-chmod 0755 %{buildroot}%{python_sitearch}/%{name}/protocol/fastbinary.so
+%{__chmod} 0755 %{buildroot}%{python_sitearch}/%{name}/protocol/fastbinary.so
 
 ## Install C#
 #%{__mkdir_p} %{buildroot}%{_libdir}/mono/gac/
@@ -261,27 +291,32 @@ chmod 0755 %{buildroot}%{python_sitearch}/%{name}/protocol/fastbinary.so
 
 # Cleanup Erlang install
 pushd %{buildroot}%{erlangdir}/lib/%{name}-%{version}
-rm -fr Makefile README build/
+%{__rm} -fr Makefile README build/
 popd
 
 # Install Haskell
+%if 0%{?with_ghc}
 pushd lib/hs
 %cabal_install
 %ghc_install_scripts
 %ghc_gen_filelists %{name}
 popd
+%endif
 
 # Install Java
+%if %{with_java}
 pushd lib/java
 %{__mkdir_p} %{buildroot}%{_javadir}
 %{__cp} -p libthrift.jar %{buildroot}%{_javadir}
 %{__mkdir_p} %{buildroot}%{_javadocdir}
 %{__cp} -rp build/javadoc/org/apache/thrift %{buildroot}%{_javadocdir}
 popd
+%endif
 
 # Install PHP
+%if 0%{?with_php}
 pushd lib/php/src/ext/thrift_protocol
-make INSTALL_ROOT=%{buildroot} install
+%{__make} INSTALL_ROOT=%{buildroot} install
 popd
 # Install PHP INI
 %{__mkdir_p} %{buildroot}%{_sysconfdir}/php.d
@@ -292,6 +327,7 @@ popd
            lib/php/src/protocol \
            lib/php/src/transport \
            %{buildroot}%{_datadir}/php/%{name}/
+%endif
 
 # Install Perl
 pushd lib/perl
@@ -309,15 +345,16 @@ ruby setup.rb install --prefix=%{buildroot}
 popd
 
 # Fix non-standard-executable-perm error
-chmod 0755 %{buildroot}%{ruby_sitearch}/thrift_native.so
+%{__chmod} 0755 %{buildroot}%{ruby_sitearch}/thrift_native.so
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %post cpp -p /sbin/ldconfig
 
 %postun cpp -p /sbin/ldconfig
 
+%if %{with_ghc}
 %post ghc-devel
 %ghc_register_pkg
 
@@ -336,6 +373,7 @@ fi
 if [ "$1" -eq 0 ]; then
 %ghc_reindex_haddock
 fi
+%endif
 %endif
 
 %files
@@ -366,6 +404,7 @@ fi
 %doc lib/erl/README tutorial/erl tutorial/*.thrift
 %{erlangdir}/lib/%{name}-%{version}
 
+%if %{with_ghc}
 %files ghc
 %defattr(-,root,root,-)
 %doc lib/hs/README lib/hs/TODO
@@ -385,7 +424,9 @@ fi
 %defattr(-,root,root,-)
 %doc lib/hs/README
 %endif
+%endif
 
+%if %{with_java}
 %files java
 %defattr(-,root,root,-)
 %doc lib/java/README tutorial/java tutorial/*.thrift
@@ -394,24 +435,29 @@ fi
 %files javadoc
 %defattr(-,root,root,-)
 %{_javadocdir}/thrift
+%endif
 
 %files perl
 %defattr(-,root,root,-)
 %doc lib/perl/README tutorial/perl tutorial/*.thrift
 %{perl_vendorlib}/Thrift*
 
+%if 0%{?with_php}
 %files php
 %defattr(-,root,root,-)
 %doc lib/php/README lib/php/README.apache tutorial/php tutorial/*.thrift
 %config(noreplace) %{_sysconfdir}/php.d/thrift_protocol.ini
 %{_datadir}/php/%{name}
 %{php_extdir}/thrift_protocol.so
+%endif
 
 %files python
 %defattr(-,root,root,-)
 %doc lib/py/README tutorial/py tutorial/*.thrift
 %{python_sitearch}/%{name}
+%if 0%{?fedora}  > 9
 %{python_sitearch}/Thrift-*.egg-info
+%endif
 
 %files ruby
 %defattr(-,root,root,-)
@@ -420,21 +466,24 @@ fi
 %{ruby_sitelib}/thrift*
 
 %changelog
-* Thu Nov 12 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20091112svn835538
+* Thu Nov 12 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.4.20091112svn835538
+- Tweaks for EL compatibility
+
+* Thu Nov 12 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.3.20091112svn835538
 - Update to latest snapshot
 
-* Mon Jul 20 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20090720svn795861
+* Mon Jul 20 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.2.20090720svn795861
 - Update to latest snapshot
 
-* Mon May 25 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20090525svn777690
+* Mon May 25 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.1.20090525svn777690
 - Update to latest snapshot
 - Fix version, release syntax and perl requires
 
-* Wed May 06 2009 Silas Sewell <silas@sewell.ch> - 0.0-0.20090505svn770888
+* Wed May 06 2009 Silas Sewell <silas@sewell.ch> - 0.0-0.1.20090505svn770888
 - Fix various require issues
 - Change lib to cpp and devel to cpp-devel
 - Use ghc version macro
 - Add documentation to language specific libraries
 
-* Fri May 01 2009 Silas Sewell <silas@sewell.ch> - 0.0-0.20090501svn770888
+* Fri May 01 2009 Silas Sewell <silas@sewell.ch> - 0.0-0.0.20090501svn770888
 - Initial build

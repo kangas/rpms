@@ -1,10 +1,18 @@
+%if 0%{?fedora} > 11
+%global with_java 1
+%global with_php 1
+%else
+%global with_java 0
+%global with_php 0
+%endif
+
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-%define snapshot 835538
+%global snapshot 835538
 
 Name:             fb303
 Version:          0.2
-Release:          0.20091117svn%{snapshot}%{?dist}
+Release:          0.2.20091117svn%{snapshot}%{?dist}
 Summary:          Facebook Bassline
 
 Group:            Development/Libraries
@@ -38,6 +46,7 @@ Requires:         %{name} = %{version}-%{release}
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
+%if %{with_java}
 %package java
 Summary:          Java bindings for %{name}
 Group:            Development/Libraries
@@ -50,6 +59,7 @@ Requires:         thrift-java
 
 %description java
 Java bindings for %{name}.
+%endif
 
 %package python
 Summary:          Python bindings for %{name}
@@ -60,6 +70,7 @@ Requires:         thrift-python
 %description python
 Python bindings for %{name}.
 
+%if %{with_php}
 %package php
 Summary:          PHP bindings for %{name}
 Group:            Development/Libraries
@@ -68,6 +79,7 @@ Requires:         thrift-php
 
 %description php
 PHP bindings for %{name}.
+%endif
 
 %prep
 %setup -q
@@ -91,13 +103,17 @@ sed -i 's/shareddir = lib/shareddir = ${prefix}\/lib/g' cpp/Makefile
 %{__make} DESTDIR=%{buildroot} install
 
 # Install Java
+%if %{with_java}
 pushd java/
 ant install -Dthrift_home=%{_prefix} -Ddist.dir=%{buildroot}%{_prefix} -Ddist.lib.dir=%{buildroot}%{_javadir} -lib %{_javadir} -lib %{_javadir}/slf4j -Dnoivy=
 popd
+%endif
 
 # Install PHP
+%if %{with_php}
 %{__mkdir_p} %{buildroot}%{_datadir}/php/%{name}
 %{__cp} -r php/FacebookBase.php %{buildroot}%{_datadir}/php/%{name}/
+%endif
 
 # Fix lib install path on x86_64
 mv %{buildroot}/usr/lib/libfb303.so %{buildroot}%{_libdir}/libfb303.so || true
@@ -121,29 +137,38 @@ rm -rf %{buildroot}
 %{_includedir}/thrift/fb303
 #%{_libdir}/*.so
 
+%if %{with_java}
 %files java
 %defattr(-,root,root,-)
 %doc README
 %{_javadir}/libfb303.jar
+%endif
 
+%if %{with_php}
 %files php
 %defattr(-,root,root,-)
 %doc README
 %{_datadir}/php/%{name}
+%endif
 
 %files python
 %defattr(-,root,root,-)
 %doc README
 %{python_sitelib}/%{name}
 %{python_sitelib}/%{name}_scripts
+%if 0%{?fedora}  > 9
 %{python_sitelib}/%{name}-*.egg-info
+%endif
 
 %changelog
-* Tue Nov 17 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20091117svn835538
+* Wed Dec 09 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.2.20091117svn835538
+- Tweaks for EL compatibility
+
+* Tue Nov 17 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.1.20091117svn835538
 - Update to thrift snapshot
 
-* Tue Jul 21 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.20090721svn795861
+* Tue Jul 21 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.0.20090721svn795861
 - Update to latest snapshot
 
-* Fri May 01 2009 Silas Sewell <silas@sewell.ch> - 0.0-0.20090501svn770888
+* Fri May 01 2009 Silas Sewell <silas@sewell.ch> - 0.0-0.0.20090501svn770888
 - Initial build

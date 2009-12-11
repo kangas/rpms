@@ -38,9 +38,7 @@ rm -rf %{buildroot}
 %doc LICENSE
 %{_bindir}/%{name}
 %{python_sitelib}/%{name}
-%if 0%{?fedora}  > 9
 %{python_sitelib}/%{name}-%{version}-*.egg-info
-%endif
 
 %changelog
 * Fri Dec 11 2009 Silas Sewell <silas@sewell.ch> - 0.1-1

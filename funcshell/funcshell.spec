@@ -5,7 +5,7 @@ Version:        0.0.1
 Release:        2%{?dist}
 Summary:        A shell interface to Func
 
-Group:          Development/Languages
+Group:          Applications/System
 License:        MIT
 URL:            http://www.silassewell.com/projects/funcshell
 Source0:        http://cloud.github.com/downloads/silas/funcshell/%{name}-%{version}.tar.gz

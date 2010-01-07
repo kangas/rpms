@@ -99,6 +99,8 @@ Provides:         %{name}-ghc-devel = %{version}-%{release}
 ExclusiveArch:    %{ix86} x86_64 ppc alpha
 BuildRequires:    cabal-install
 BuildRequires:    ghc
+BuildRequires:    ghc-network-devel
+BuildRequires:    ghc-network-prof
 BuildRequires:    ghc-rpm-macros
 
 %description ghc

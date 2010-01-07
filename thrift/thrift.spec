@@ -30,7 +30,7 @@
 
 Name:             thrift
 Version:          %{global_version}
-Release:          0.4.20091112svn%{snapshot}%{?dist}
+Release:          0.5.20091112svn%{snapshot}%{?dist}
 Summary:          A multi-language RPC and serialization framework
 
 Group:            System Environment/Libraries
@@ -468,6 +468,9 @@ fi
 %{ruby_sitelib}/thrift*
 
 %changelog
+* Thu Jan 07 2010 Silas Sewell <silas@sewell.ch> - 0.2-0.5.20091112svn835538
+- Add ghc-network-prof and ghc-network-devel dependencies
+
 * Tue Dec 08 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.4.20091112svn835538
 - Tweaks for EL compatibility
 

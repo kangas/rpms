@@ -1,5 +1,5 @@
 %if 0%{?fedora} > 11
-%global with_ghc 1
+%global with_ghc 0
 %global with_java 1
 %global with_php 1
 %else
@@ -30,7 +30,7 @@
 
 Name:             thrift
 Version:          %{global_version}
-Release:          0.5.20091112svn%{snapshot}%{?dist}
+Release:          0.6.20091112svn%{snapshot}%{?dist}
 Summary:          A multi-language RPC and serialization framework
 
 Group:            System Environment/Libraries
@@ -468,6 +468,9 @@ fi
 %{ruby_sitelib}/thrift*
 
 %changelog
+* Thu Jan 07 2010 Silas Sewell <silas@sewell.ch> - 0.2-0.6.20091112svn835538
+- Disable ghc until rawhide is fixed
+
 * Thu Jan 07 2010 Silas Sewell <silas@sewell.ch> - 0.2-0.5.20091112svn835538
 - Add ghc-network-prof and ghc-network-devel dependencies
 

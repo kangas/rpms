@@ -1,0 +1,11 @@
+diff -up lxc-0.6.5/src/lxc/start.c.orig lxc-0.6.5/src/lxc/start.c
+--- lxc-0.6.5/src/lxc/start.c.orig	2010-02-17 15:04:08.911409808 -0700
++++ lxc-0.6.5/src/lxc/start.c	2010-02-17 15:04:25.480347046 -0700
+@@ -36,6 +36,7 @@
+ #include <sys/param.h>
+ #include <sys/file.h>
+ #include <sys/mount.h>
++#include <sys/stat.h>
+ #include <sys/types.h>
+ #include <sys/prctl.h>
+ #include <sys/types.h>

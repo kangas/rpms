@@ -1,8 +1,10 @@
 %if 0%{?fedora} > 11
+%global with_csharp 0
 %global with_ghc 0
 %global with_java 1
 %global with_php 1
 %else
+%global with_csharp 0
 %global with_ghc 0
 %global with_java 0
 %global with_php 0
@@ -25,20 +27,15 @@
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e "puts Config::CONFIG['sitelibdir']")}
 %{!?ruby_sitearch: %global ruby_sitearch %(ruby -rrbconfig -e "puts Config::CONFIG['sitearchdir']")}
 
-%global global_version 0.2
-%global snapshot 835538
-
 Name:             thrift
-Version:          %{global_version}
-Release:          0.6.20091112svn%{snapshot}%{?dist}
+Version:          0.2.0
+Release:          1%{?dist}
 Summary:          A multi-language RPC and serialization framework
 
 Group:            System Environment/Libraries
 License:          ASL 2.0
 URL:              http://incubator.apache.org/thrift
-# svn export http://svn.apache.org/repos/asf/incubator/thrift/trunk -r %{snapshot} thrift-%{version}
-# tar -czf thrift-%{version}.tar.gz thrift-%{version}/
-Source0:          %{name}-%{version}.tar.gz
+Source0:          http://www.apache.org/dist/incubator/thrift/%{version}-incubating/%{name}-%{version}-incubating.tar.gz
 Source1:          thrift_protocol.ini
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -73,14 +70,16 @@ Requires:         %{name}-cpp = %{version}-%{release}
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
-#%package csharp
-#Summary:          C# bindings for %{name}
-#Group:            Development/Libraries
+%if 0%{?with_csharp}
+%package csharp
+Summary:          C# bindings for %{name}
+Group:            Development/Libraries
 # sparc64 doesn't have mono
-#ExcludeArch:      sparc64
+ExcludeArch:      sparc64
 
-#%description csharp
-#C# bindings for %{name}.
+%description csharp
+C# bindings for %{name}.
+%endif
 
 %package erlang
 Summary:          Erlang bindings for %{name}
@@ -230,7 +229,6 @@ find tutorial/ -type f -exec chmod 0644 {} \;
 sed -i '/#/d;/^$/d' lib/hs/Setup.lhs
 
 %build
-./bootstrap.sh
 %configure --without-java --without-perl --without-ruby --enable-static=no
 %{__make} %{?_smp_mflags}
 
@@ -283,9 +281,11 @@ find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 # Fix non-standard-executable-perm
 %{__chmod} 0755 %{buildroot}%{python_sitearch}/%{name}/protocol/fastbinary.so
 
-## Install C#
-#%{__mkdir_p} %{buildroot}%{_libdir}/mono/gac/
-#gacutil -i lib/csharp/Thrift.dll -f -package Thrift -root %{buildroot}%{_libdir}
+%if 0%{?with_csharp}
+# Install C#
+%{__mkdir_p} %{buildroot}%{_libdir}/mono/gac/
+gacutil -i lib/csharp/Thrift.dll -f -package Thrift -root %{buildroot}%{_libdir}
+%endif
 
 # Install Erlang
 %{__mkdir_p} %{buildroot}%{erlangdir}/lib/%{name}-%{version}
@@ -395,11 +395,13 @@ fi
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/thrift*
 
-#%files csharp
-#%defattr(-,root,root,-)
-#%doc lib/csharp/README
-#%{_libdir}/mono/gac/Thrift
-#%{_libdir}/mono/thrift
+%if 0%{?with_csharp}
+%files csharp
+%defattr(-,root,root,-)
+%doc lib/csharp/README
+%{_libdir}/mono/gac/Thrift
+%{_libdir}/mono/thrift
+%endif
 
 %files erlang
 %defattr(-,root,root,-)
@@ -413,7 +415,7 @@ fi
 
 %files ghc-devel -f lib/hs/thrift-devel.files
 %defattr(-,root,root,-)
-%{_docdir}/%{name}-%{global_version}
+%{_docdir}/%{name}-%{version}
 
 %if %{with doc}
 %files ghc-doc
@@ -468,6 +470,11 @@ fi
 %{ruby_sitelib}/thrift*
 
 %changelog
+* Mon Mar 01 2010 Silas Sewell <silas@sewell.ch> - 0.2.0-1
+- Update to non-snapshot release
+- Various tweaks for release package
+- Add flag for csharp build
+
 * Thu Jan 07 2010 Silas Sewell <silas@sewell.ch> - 0.2-0.6.20091112svn835538
 - Disable ghc until rawhide is fixed
 

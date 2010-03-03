@@ -8,19 +8,15 @@
 
 %{!?python_sitelib: %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-%global snapshot 835538
-
 Name:             fb303
-Version:          0.2
-Release:          0.2.20091117svn%{snapshot}%{?dist}
+Version:          0.2.0
+Release:          1%{?dist}
 Summary:          Facebook Bassline
 
 Group:            Development/Libraries
 License:          ASL 2.0
 URL:              http://incubator.apache.org/thrift
-# svn export http://svn.apache.org/repos/asf/incubator/thrift/trunk/contrib/fb303 -r %{snapshot} fb303-%{version}
-# tar -czf fb303-%{version}.tar.gz fb303-%{version}/
-Source0:          %{name}-%{version}.tar.gz
+Source0:          http://www.apache.org/dist/incubator/thrift/%{version}-incubating/thrift-%{version}-incubating.tar.gz
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:    automake
@@ -29,8 +25,8 @@ BuildRequires:    boost-devel >= 1.33.1
 BuildRequires:    flex
 BuildRequires:    libevent-devel
 BuildRequires:    libtool
-BuildRequires:    thrift
-BuildRequires:    thrift-cpp-devel
+BuildRequires:    thrift = %{version}
+BuildRequires:    thrift-cpp-devel = %{version}
 BuildRequires:    zlib-devel
 
 %description
@@ -53,9 +49,9 @@ Group:            Development/Libraries
 BuildRequires:    ant 
 BuildRequires:    java-1.6.0-openjdk-devel
 BuildRequires:    jpackage-utils
-BuildRequires:    thrift-java
+BuildRequires:    thrift-java = %{version}
 Requires:         java-1.6.0-openjdk
-Requires:         thrift-java
+Requires:         thrift-java = %{version}
 
 %description java
 Java bindings for %{name}.
@@ -65,7 +61,7 @@ Java bindings for %{name}.
 Summary:          Python bindings for %{name}
 Group:            Development/Libraries
 BuildRequires:    python-devel
-Requires:         thrift-python
+Requires:         thrift-python = %{version}
 
 %description python
 Python bindings for %{name}.
@@ -75,14 +71,15 @@ Python bindings for %{name}.
 Summary:          PHP bindings for %{name}
 Group:            Development/Libraries
 BuildRequires:    php-devel
-Requires:         thrift-php
+Requires:         thrift-php = %{version}
 
 %description php
 PHP bindings for %{name}.
 %endif
 
 %prep
-%setup -q
+%setup -q -n thrift-%{version}
+cd ./contrib/fb303
 
 # Fix non-executable-script error
 sed -i '/^#!\/usr\/bin\/env python/,+1 d' \
@@ -90,12 +87,14 @@ sed -i '/^#!\/usr\/bin\/env python/,+1 d' \
   py/fb303/FacebookBase.py
 
 %build
+cd ./contrib/fb303
 ./bootstrap.sh
 %configure --enable-static=no --with-thriftpath=%{_prefix}
 %{__make} %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
+cd ./contrib/fb303
 
 # Fix install path
 sed -i 's/shareddir = lib/shareddir = ${prefix}\/lib/g' cpp/Makefile
@@ -116,10 +115,10 @@ popd
 %endif
 
 # Fix lib install path on x86_64
-mv %{buildroot}/usr/lib/libfb303.so %{buildroot}%{_libdir}/libfb303.so || true
+%{__mv} %{buildroot}/usr/lib/libfb303.so %{buildroot}%{_libdir}/libfb303.so || true
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 
@@ -161,14 +160,17 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
-* Wed Dec 09 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.2.20091117svn835538
+* Wed Mar 03 2010 Silas Sewell <silas@sewell.ch> - 0.2.0-1
+- Update to non-snapshot release
+
+* Wed Dec 09 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.4.20091117svn835538
 - Tweaks for EL compatibility
 
-* Tue Nov 17 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.1.20091117svn835538
+* Tue Nov 17 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.3.20091117svn835538
 - Update to thrift snapshot
 
-* Tue Jul 21 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.0.20090721svn795861
+* Tue Jul 21 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.2.20090721svn795861
 - Update to latest snapshot
 
-* Fri May 01 2009 Silas Sewell <silas@sewell.ch> - 0.0-0.0.20090501svn770888
+* Fri May 01 2009 Silas Sewell <silas@sewell.ch> - 0.2-0.1.20090501svn770888
 - Initial build

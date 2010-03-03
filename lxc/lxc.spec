@@ -7,6 +7,7 @@ Group:          Applications/System
 License:        LGPLv2+
 URL:            http://lxc.sourceforge.net
 Source0:        http://lxc.sourceforge.net/download/lxc/%{name}-%{version}.tar.gz
+# Patch submitted in bug ID #2954017
 Patch0:         lxc-0.6.5-fix-sys-stat.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 

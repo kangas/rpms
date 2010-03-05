@@ -2,7 +2,7 @@
 
 Name:           python-cly
 Version:        0.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A module for adding powerful text-based consoles to your Python application
 
 Group:          Development/Languages
@@ -15,6 +15,7 @@ BuildRequires:  python-devel
 BuildRequires:  python-docutils
 BuildRequires:  python-pygments
 BuildRequires:  python-setuptools
+BuildRequires:  ncurses-devel
 BuildRequires:  readline-devel
 
 %description
@@ -30,13 +31,13 @@ CFLAGS="%{optflags}" %{__python} setup.py build
 make --directory doc/
 
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 # Fix non-standard-executable-perm error
-chmod 0755 %{buildroot}%{python_sitearch}/cly/rlext.so
+%{__chmod} 0755 %{buildroot}%{python_sitearch}/cly/rlext.so
 
 %clean
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
@@ -45,6 +46,9 @@ rm -rf %{buildroot}
 %{python_sitearch}/cly-%{version}-*.egg-info
 
 %changelog
+* Fri Mar 05 2010 Silas Sewell <silas@sewell.ch> - 0.9-3
+- Fix build on EPEL
+
 * Sun Apr 12 2009 Silas Sewell <silas@sewell.ch> - 0.9-2
 - Normalize spec
 

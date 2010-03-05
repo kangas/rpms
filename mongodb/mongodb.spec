@@ -1,55 +1,48 @@
-%global snapshot e316c78
+Name:             mongodb
+Version:          1.2.4
+Release:          1%{?dist}
+Summary:          High-performance, schema-free document-oriented database
+Group:            Applications/Databases
+License:          AGPLv3
+URL:              http://www.mongodb.org
+Source0:          http://downloads.mongodb.org/src/mongodb-src-r%{version}.tar.gz
+Source1:          mongodb.init
+Source2:          mongodb.logrotate
+Patch0:           mongodb-1.0.1.SConstruct.patch
+BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-Name:           mongodb
-Version:        1.0.1
-Release:        1%{?dist}
-Summary:        High-performance, schema-free document-oriented database
-Group:          Applications/Databases
-License:        AGPLv3
-URL:            http://www.mongodb.org
-Source0:        http://download.github.com/%{name}-mongo-%{snapshot}.tar.gz
-# init-script:
-Source1:        mongodb.init
-Source2:        mongodb.logrotate
-Patch0:         mongodb-1.0.1.SConstruct.patch
-BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+BuildRequires:    python-devel >= 2.6
+BuildRequires:    scons
+BuildRequires:    boost-devel
+BuildRequires:    pcre-devel
+BuildRequires:    js-devel
+BuildRequires:    readline-devel
+BuildRequires:    libpcap-devel
+BuildRequires:    unittest
 
-BuildRequires:  python-devel >= 2.6
-BuildRequires:  scons
-BuildRequires:  boost-devel
-BuildRequires:  pcre-devel
-BuildRequires:  js-devel
-BuildRequires:  readline-devel
-BuildRequires:  libpcap-devel
-# to run tests
-BuildRequires:  unittest
-
-Requires(post): chkconfig
-Requires(preun): chkconfig
-
-Requires(pre):  shadow-utils
-
-# This is for /sbin/service
+Requires(post):   chkconfig
 Requires(postun): initscripts
-
+Requires(preun):  chkconfig
+Requires(pre):    shadow-utils
 
 %description
-Mongo (from "humongous") is a high-performance, open source, schema-free
-document-oriented database. MongoDB is written in C++ and offers the following
-features:
-    * Collection oriented storage: easy storage of object/JSON-style data
-    * Dynamic queries
-    * Full index support, including on inner objects and embedded arrays
-    * Query profiling
-    * Replication and fail-over support
-    * Efficient storage of binary data including large objects (e.g. photos
-    and videos)
-    * Auto-sharding for cloud-level scalability (currently in early alpha)
-    * Commercial Support Available
+MongoDB (from "humongous") is a scalable, high-performance, open source,
+schema-free, document-oriented database. Written in C++, MongoDB features:
 
-A key goal of MongoDB is to bridge the gap between key/value stores (which are
-fast and highly scalable) and traditional RDBMS systems (which are deep in
-functionality).
+ * Document-oriented storage (the simplicity and power of JSON-like data schemas)
+ * Dynamic queries
+ * Full index support, extending to inner-objects and embedded arrays
+ * Query profiling
+ * Fast, in-place updates
+ * Efficient storage of binary data large objects (e.g. photos and videos)
+ * Replication and fail-over support
+ * Auto-sharding for cloud-level scalability
+ * MapReduce for complex aggregation
+ * Commercial Support, Training, and Consulting
+
+MongoDB bridges the gap between key-value stores (which are fast and highly
+scalable) and traditional RDBMS systems (which provide structured schemas and
+powerful queries).
 
 %package devel
 Summary:        MongoDB header files
@@ -62,7 +55,7 @@ This package provides the header files and C++ driver for MongoDB. MongoDB is
 a high-performance, open source, schema-free document-oriented database.
 
 %prep
-%setup -q -n %{name}-mongo-%{snapshot}
+%setup -q -n %{name}-src-r%{version}
 
 # Enable debuginfo
 %patch0 -p1
@@ -70,25 +63,19 @@ a high-performance, open source, schema-free document-oriented database.
 # change dbpath
 %{__sed} -i 's|/data/db/|%{_sharedstatedir}/%{name}/|' db/pdfile.cpp db/db.cpp
 
-
 %build
 scons %{?_smp_mflags} .
 
-
 %install
-rm -rf %{buildroot}
+%{__rm} -rf %{buildroot}
 scons %{?_smp_mflags} install --prefix=%{buildroot}%{_prefix}
-
-mkdir -p %{buildroot}%{_sharedstatedir}/%{name}
-
-mkdir -p %{buildroot}%{_localstatedir}/log/%{name}
+%{__mkdir} -p %{buildroot}%{_sharedstatedir}/%{name}
+%{__mkdir} -p %{buildroot}%{_localstatedir}/log/%{name}
 install -p -D -m 755 %{SOURCE1} %{buildroot}%{_initddir}/%{name}
-
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 %clean
-rm -rf %{buildroot}
-
+%{__rm} -rf %{buildroot}
 
 %pre
 getent group %{name} >/dev/null || groupadd -r %{name}
@@ -97,10 +84,8 @@ useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
 -c "MongoDB Database Server" %{name}
 exit 0
 
-
 %post
 /sbin/chkconfig --add %{name}
-
 
 %preun
 if [ $1 = 0 ] ; then
@@ -108,12 +93,10 @@ if [ $1 = 0 ] ; then
     /sbin/chkconfig --del %{name}
 fi
 
-
 %postun
 if [ "$1" -ge "1" ] ; then
     /sbin/service %{name} condrestart >/dev/null 2>&1 || :
 fi
-
 
 %files
 %defattr(-,root,root,-)
@@ -124,7 +107,6 @@ fi
 %{_bindir}/mongo*
 %{_initddir}/%{name}
 
-
 %files devel
 %defattr(-,root,root,-)
 %doc README
@@ -132,6 +114,9 @@ fi
 %{_libdir}/libmongoclient.a
 
 %changelog
+* Fri Mar 05 2010 Silas Sewell <silas@sewell.ch> - 1.2.4-1
+- Update to 1.2.4
+
 * Sat Dec 05 2009 Silas Sewell <silas@sewell.ch> - 1.0.1-1
 - Update to 1.0.1
 

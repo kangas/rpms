@@ -1,5 +1,5 @@
 Name:             tokyotyrant
-Version:          1.1.36
+Version:          1.1.40
 Release:          1%{?dist}
 Summary:          A network interface to Tokyo Cabinet
 
@@ -134,6 +134,9 @@ fi
 %{_mandir}/man3/t*.gz
 
 %changelog
+* Thu Mar 04 2010 Silas Sewell <silas@sewell.ch> - 1.1.40-1
+- Update to 1.1.40
+
 * Thu Oct 22 2009 Silas Sewell <silas@sewell.ch> - 1.1.36-1
 - Update to 1.1.36
 

@@ -9,7 +9,7 @@ Summary:        A coroutine-based Python networking library
 
 Group:          Development/Languages
 License:        MIT
-URL:            http://pypi.python.org/pypi/gevent
+URL:            http://www.gevent.org/
 Source0:        http://pypi.python.org/packages/source/g/gevent/gevent-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 

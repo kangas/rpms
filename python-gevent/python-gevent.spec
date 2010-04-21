@@ -16,6 +16,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  libevent-devel >= 1.4.0
+Requires:       python-greenlet
 
 %description
 gevent is a coroutine-based Python networking library that uses greenlet to

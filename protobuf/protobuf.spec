@@ -19,8 +19,12 @@ License:        BSD
 Group:          Development/Libraries
 Source:         http://protobuf.googlecode.com/files/%{name}-%{version}.tar.bz2
 Source1:        ftdetect-proto.vim
+# Remove version of gtest included with source
 Patch1:         protobuf-%{version}-fedora-gtest.patch
-Patch2:         protobuf-java-notests.patch
+# Fix various Java build issues
+Patch2:         protobuf-java-fixes.patch
+# Remove setuptools version requirement for epel
+Patch3:         protobuf-python-fix-epel.patch
 URL:            http://code.google.com/p/protobuf/
 BuildRoot:      %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
 BuildRequires:  automake autoconf libtool pkgconfig 
@@ -45,6 +49,9 @@ breaking deployed programs that are compiled against the "old" format.
 Summary: Protocol Buffers compiler
 Group: Development/Libraries
 Requires: %{name} = %{version}-%{release}
+%if 0%{?el5}
+BuildRequires: chrpath
+%endif
 
 %description compiler
 This package contains Protocol Buffers compiler for all programming
@@ -112,11 +119,7 @@ lacks descriptors, reflection, and some other features.
 Summary: Python bindings for Google Protocol Buffers
 Group: Development/Languages
 BuildRequires: python-devel
-%if 0%{?el5}
-BuildRequires: python-setuptools-devel
-%else
 BuildRequires: python-setuptools
-%endif
 Conflicts: %{name}-compiler > %{version}
 Conflicts: %{name}-compiler < %{version}
 
@@ -137,18 +140,18 @@ descriptions in Vim editor
 %package java
 Summary: Java Protocol Buffers runtime library
 Group:   Development/Languages
-BuildRequires:    java-devel >= 1.6
+BuildRequires:    java-devel >= 1:1.6
 BuildRequires:    jpackage-utils
 BuildRequires:    maven2
+BuildRequires:    maven2-plugin-antrun
 BuildRequires:    maven2-plugin-compiler
 BuildRequires:    maven2-plugin-install
 BuildRequires:    maven2-plugin-jar
 BuildRequires:    maven2-plugin-javadoc
-BuildRequires:    maven2-plugin-release
+BuildRequires:    maven-doxia-sitetools
 BuildRequires:    maven2-plugin-resources
 BuildRequires:    maven2-plugin-surefire
-BuildRequires:    maven2-plugin-antrun
-Requires:         java
+Requires:         java >= 1:1.6
 Requires:         jpackage-utils
 Requires(post):   jpackage-utils
 Requires(postun): jpackage-utils
@@ -177,8 +180,11 @@ rm -rf gtest
 %endif
 chmod 644 examples/*
 %if %{with_java}
-%patch2
-rm -rf java/src/test
+%patch2 -p1
+rm -fr java/src/test
+%endif
+%if 0%{?el5}
+%patch3 -p1
 %endif
 
 %build
@@ -214,6 +220,12 @@ make %{?_smp_mflags} check
 rm -rf %{buildroot}
 make %{?_smp_mflags} install DESTDIR=%{buildroot} STRIPBINARIES=no INSTALL="%{__install} -p" CPPROG="cp -p"
 find %{buildroot} -type f -name "*.la" -exec rm -f {} \;
+
+# Fix rpath in epel because we can't run autogen.sh
+%if 0%{?el5}
+chrpath --delete %{buildroot}%{_libdir}/libprotoc.so.*
+chrpath --delete %{buildroot}%{_bindir}/protoc
+%endif
 
 %if %{with_python}
 pushd python
@@ -328,6 +340,7 @@ rm -rf %{buildroot}
 * Wed Apr 21 2010 Silas Sewell <silas@sewell.ch> - 2.3.0-1
 - Update to 2.3.0
 - Add epel support
+- Include partial patch from Bradley Baetz to re-enable Java
 
 * Wed Sep 30 2009 Lev Shamardin <shamardin@gmail.com> - 2.2.0-2
 - added export PTHREAD_LIBS="-lpthread"

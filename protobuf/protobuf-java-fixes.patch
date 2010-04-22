@@ -1,9 +1,22 @@
---- java/pom.xml.orig	2008-10-12 13:17:47.000000000 +0400
-+++ java/pom.xml	2008-10-12 13:32:22.000000000 +0400
-@@ -47,26 +47,6 @@
-       <uniqueVersion>true</uniqueVersion>
-     </snapshotRepository>
-   </distributionManagement>
+diff -up protobuf-2.3.0/java/pom.xml.orig protobuf-2.3.0/java/pom.xml
+--- protobuf-2.3.0/java/pom.xml.orig	2010-04-21 20:59:56.378273539 -0600
++++ protobuf-2.3.0/java/pom.xml	2010-04-21 21:28:39.565018649 -0600
+@@ -3,11 +3,6 @@
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+   <modelVersion>4.0.0</modelVersion>
+-  <parent>
+-    <groupId>com.google</groupId>
+-    <artifactId>google</artifactId>
+-    <version>1</version>
+-  </parent>
+   <groupId>com.google.protobuf</groupId>
+   <artifactId>protobuf-java</artifactId>
+   <version>2.3.0</version>
+@@ -32,26 +27,6 @@
+       scm:svn:http://protobuf.googlecode.com/svn/trunk/
+     </connection>
+   </scm>
 -  <dependencies>
 -    <dependency>
 -      <groupId>junit</groupId>
@@ -27,7 +40,7 @@
    <build>
      <plugins>
        <plugin>
-@@ -77,14 +57,6 @@
+@@ -62,14 +37,6 @@
          </configuration>
        </plugin>
        <plugin>
@@ -42,7 +55,7 @@
          <artifactId>maven-antrun-plugin</artifactId>
          <executions>
            <execution>
-@@ -105,33 +77,6 @@
+@@ -90,38 +57,6 @@
                <goal>run</goal>
              </goals>
            </execution>
@@ -65,6 +78,11 @@
 -                    value="../src/google/protobuf/unittest_optimize_for.proto" />
 -                  <arg
 -                    value="../src/google/protobuf/unittest_custom_options.proto" />
+-                  <arg value="../src/google/protobuf/unittest_lite.proto" />
+-                  <arg value="../src/google/protobuf/unittest_import_lite.proto" />
+-                  <arg value="../src/google/protobuf/unittest_lite_imports_nonlite.proto" />
+-                  <arg value="../src/google/protobuf/unittest_enormous_descriptor.proto" />
+-                  <arg value="../src/google/protobuf/unittest_no_generic_services.proto" />
 -                </exec>
 -              </tasks>
 -              <testSourceRoot>target/generated-test-sources</testSourceRoot>
@@ -76,3 +94,22 @@
          </executions>
        </plugin>
      </plugins>
+@@ -148,18 +83,6 @@
+                 <include>**/UninitializedMessageException.java</include>
+                 <include>**/WireFormat.java</include>
+               </includes>
+-              <testIncludes>
+-                <testInclude>**/LiteTest.java</testInclude>
+-                <testInclude>**/*Lite.java</testInclude>
+-              </testIncludes>
+-            </configuration>
+-          </plugin>
+-          <plugin>
+-            <artifactId>maven-surefire-plugin</artifactId>
+-            <configuration>
+-              <includes>
+-                <include>**/LiteTest.java</include>
+-              </includes>
+             </configuration>
+           </plugin>
+           <plugin>

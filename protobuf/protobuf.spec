@@ -1,10 +1,11 @@
-# don't build -python subpackage
-%define with_python   %{?_without_python: 0} %{?!_without_python: 1}
-# don't build -java subpackages
-#%define with_java     %{?_without_java:   0} %{?!_without_java:   1}
-%define with_java 0
-# don't require gtest for building
 %define without_gtest %{?_without_gtest:  1} %{?!_without_gtest:  0}
+%define with_python   %{?_without_python: 0} %{?!_without_python: 1}
+%define with_java     %{?_without_java:   0} %{?!_without_java:   1}
+
+%if 0%{?el5}
+%define without_gtest 1
+%define with_java 0
+%endif
 
 %if %{with_python}
 %define python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")
@@ -12,8 +13,8 @@
 
 Summary:        Protocol Buffers - Google's data interchange format
 Name:           protobuf
-Version:        2.2.0
-Release:        2%{?dist}
+Version:        2.3.0
+Release:        1%{?dist}
 License:        BSD
 Group:          Development/Libraries
 Source:         http://protobuf.googlecode.com/files/%{name}-%{version}.tar.bz2
@@ -81,6 +82,7 @@ lacks descriptors, reflection, and some other features.
 
 %package lite-devel
 Summary: Protocol Buffers LITE_RUNTIME development libraries
+Group: Development/Libraries
 Requires: %{name}-devel = %{version}-%{release}
 Requires: %{name}-lite = %{version}-%{release}
 
@@ -110,7 +112,11 @@ lacks descriptors, reflection, and some other features.
 Summary: Python bindings for Google Protocol Buffers
 Group: Development/Languages
 BuildRequires: python-devel
+%if 0%{?el5}
 BuildRequires: python-setuptools-devel
+%else
+BuildRequires: python-setuptools
+%endif
 Conflicts: %{name}-compiler > %{version}
 Conflicts: %{name}-compiler < %{version}
 
@@ -167,7 +173,7 @@ This package contains the API documentation for %{name}-java.
 %setup -q
 %if !%{without_gtest}
 rm -rf gtest
-%patch1 -p2
+%patch1 -p1
 %endif
 chmod 644 examples/*
 %if %{with_java}
@@ -179,7 +185,9 @@ rm -rf java/src/test
 iconv -f iso8859-1 -t utf-8 CONTRIBUTORS.txt > CONTRIBUTORS.txt.utf8
 mv CONTRIBUTORS.txt.utf8 CONTRIBUTORS.txt
 export PTHREAD_LIBS="-lpthread"
+%if !0%{?el5}
 ./autogen.sh
+%endif
 %configure
 
 make %{?_smp_mflags}
@@ -292,8 +300,8 @@ rm -rf %{buildroot}
 %defattr(-, root, root, -)
 %dir %{python_sitelib}/google
 %{python_sitelib}/google/protobuf/
-%{python_sitelib}/protobuf-%{version}-py2.6.egg-info/
-%{python_sitelib}/protobuf-%{version}-py2.6-nspkg.pth
+%{python_sitelib}/protobuf-%{version}-*.egg-info/
+%{python_sitelib}/protobuf-%{version}-*-nspkg.pth
 %doc python/README.txt 
 %doc examples/add_person.py examples/list_people.py examples/addressbook.proto
 %endif
@@ -317,6 +325,10 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Apr 21 2010 Silas Sewell <silas@sewell.ch> - 2.3.0-1
+- Update to 2.3.0
+- Add epel support
+
 * Wed Sep 30 2009 Lev Shamardin <shamardin@gmail.com> - 2.2.0-2
 - added export PTHREAD_LIBS="-lpthread"
 

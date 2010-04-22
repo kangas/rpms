@@ -10,7 +10,7 @@ Summary:        A Riak Python client
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://bitbucket.org/basho/riak-python-client
-# hg clone http://bitbucket.org/silassewell/riak-python-client python-riak-%{version}
+# hg clone http://bitbucket.org/basho/riak-python-client python-riak-%{version}
 # rm -fr python-riak-%{version}/.hg
 # tar -czf python-riak-%{version}.tar.gz python-riak-%{version}/
 Source0:        %{name}-%{version}.tar.gz

@@ -1,7 +1,7 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           python-mutagen
-Version:        1.18
+Version:        1.19
 Release:        1%{?dist}
 Summary:        Mutagen is a Python module to handle audio metadata
 
@@ -48,6 +48,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/mutagen-%{version}-*.egg-info
 
 %changelog
+* Tue Apr 20 2010 Silas Sewell <silas@sewell.ch> - 1.19-1
+- Update to 1.19
+
 * Thu Feb 18 2010 Silas Sewell <silas@sewell.ch> - 1.18-1
 - Update to 1.18
 

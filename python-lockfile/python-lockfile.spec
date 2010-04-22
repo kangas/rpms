@@ -3,7 +3,7 @@
 %define upstream_name lockfile
 
 Name:           python-%{upstream_name}
-Version:        0.8
+Version:        0.9
 Release:        1%{?dist}
 Summary:        A platform-independent file locking module
 
@@ -45,5 +45,8 @@ rm -rf %{buildroot}
 %{python_sitelib}/%{upstream_name}-%{version}-*.egg-info
 
 %changelog
+* Tue Apr 20 2010 Silas Sewell <silas@sewell.ch> - 0.9-1
+- Update to version 0.9
+
 * Thu Jul 23 2009 Silas Sewell <silas@sewell.ch> - 0.8-1
-- Initial build.
+- Initial build

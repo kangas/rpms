@@ -21,6 +21,7 @@ BuildRequires:  protobuf-compiler
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 Requires:       protobuf-python
+Requires:       python-pycurl
 
 %description
 Riak is a Dynamo-inspired key/value store that scales predictably and easily.

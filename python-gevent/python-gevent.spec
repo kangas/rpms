@@ -4,7 +4,7 @@
 
 Name:           python-%{upstream_name}
 Version:        0.12.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A coroutine-based Python networking library
 
 Group:          Development/Languages
@@ -14,7 +14,6 @@ Source0:        http://pypi.python.org/packages/source/g/gevent/gevent-%{version
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  python-devel
-BuildRequires:  python-setuptools
 BuildRequires:  libevent-devel >= 1.4.0
 Requires:       python-greenlet
 
@@ -38,13 +37,13 @@ Features include:
 CFLAGS="%{optflags}" %{__python} setup.py build
 
 %install
-%{__rm} -rf %{buildroot}
+rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 # Fix non-standard-executable-perm error
 %{__chmod} 0755 %{buildroot}%{python_sitearch}/%{upstream_name}/core.so
 
 %clean
-%{__rm} -rf %{buildroot}
+rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
@@ -53,5 +52,8 @@ CFLAGS="%{optflags}" %{__python} setup.py build
 %{python_sitearch}/%{upstream_name}-%{version}-*.egg-info
 
 %changelog
+* Fri Apr 23 2010 Silas Sewell <silas@sewell.ch> - 0.12.2-2
+- Remove setuptools requirement
+
 * Wed Mar 17 2010 Silas Sewell <silas@sewell.ch> - 0.12.2-1
 - Initial build

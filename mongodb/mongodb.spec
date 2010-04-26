@@ -1,5 +1,5 @@
 Name:             mongodb
-Version:          1.2.4
+Version:          1.4.1
 Release:          1%{?dist}
 Summary:          High-performance, schema-free document-oriented database
 Group:            Applications/Databases
@@ -114,6 +114,9 @@ fi
 %{_libdir}/libmongoclient.a
 
 %changelog
+* Fri Apr 22 2010 Silas Sewell <silas@sewell.ch> - 1.4.1-1
+- Update to 1.4.1
+
 * Fri Mar 05 2010 Silas Sewell <silas@sewell.ch> - 1.2.4-1
 - Update to 1.2.4
 

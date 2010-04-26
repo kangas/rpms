@@ -46,8 +46,10 @@ rm -rf %{buildroot}
 %doc LICENSE.txt PKG-INFO README.txt
 %{_bindir}/kernprof
 %{python_sitearch}/_%{real_name}.so
-%{python_sitearch}/%{real_name}-*.egg-info
 %{python_sitearch}/%{real_name}.py*
+%if !0%{?el5}
+%{python_sitearch}/%{real_name}-*.egg-info
+%endif
 
 %changelog
 * Mon Jun 01 2009 Silas Sewell <silas@sewell.ch> - 1.0-0.3.b2

@@ -1,0 +1,26 @@
+diff -up libv8-2.2.4.2/SConstruct.orig libv8-2.2.4.2/SConstruct
+--- libv8-2.2.4.2/SConstruct.orig	2010-04-25 18:41:43.380305931 -0600
++++ libv8-2.2.4.2/SConstruct	2010-04-25 20:59:20.441555477 -0600
+@@ -1023,17 +1023,18 @@ def BuildSpecific(env, mode, env_overrid
+   suffix = SUFFIXES[target_id]
+   library_name = 'v8' + suffix
+   version = GetVersion()
+-  if context.options['soname'] == 'on':
+-    # When building shared object with SONAME version the library name.
+-    library_name += '-' + version
+ 
+   # Generate library SONAME if required by the build.
+   if context.options['soname'] == 'on':
+     soname = GetSpecificSONAME()
+     if soname == '':
+-      soname = 'lib' + library_name + '.so'
++      soname = 'lib' + library_name + '.so.' + version
+     env['SONAME'] = soname
+ 
++  if context.options['soname'] == 'on':
++    # When building shared object with SONAME version the library name.
++    library_name += '-' + version
++
+   # Build the object files by invoking SCons recursively.
+   (object_files, shell_files, mksnapshot) = env.SConscript(
+     join('src', 'SConscript'),

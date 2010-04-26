@@ -1,17 +1,15 @@
-%define snapshot_revision 2641
-%define snapshot_date 20090806
-
 Name:           libv8
-Version:        1.2
-Release:        0.1.%{snapshot_date}svn%{snapshot_revision}%{?dist}
+Version:        2.2.4.2
+Release:        1%{?dist}
 Summary:        V8 JavaScript Engine
 
 Group:          System Environment/Libraries
 License:        BSD
 URL:            http://code.google.com/apis/v8
-# svn export http://v8.googlecode.com/svn/trunk -r %{snapshot} %{name}-%{version}
+# svn export http://v8.googlecode.com/svn/tags/%{version} %{name}-%{version}
 # tar -czf %{name}-%{version}.tar.gz %{name}-%{version}/
 Source0:        %{name}-%{version}.tar.gz
+Patch0:         libv8-fix-soname-2.2.4.2.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  scons
@@ -31,9 +29,21 @@ developing applications that use %{name}.
 
 %prep
 %setup -q
+%patch0 -p1
 
 %build
-scons %{?_smp_mflags} library=shared soname=on mode=release snapshot=on
+%if 0%{?fedora} > 10
+export GCC_VERSION='44'
+%endif
+%ifarch x86_64
+export OPTIONS="arch=x64"
+%else
+export OPTIONS="arch=ia32"
+%endif
+scons %{?_smp_mflags} library=shared soname=on mode=release snapshot=on os=linux \
+    console=readline $OPTIONS
+# Rename libv8-*.*.*.*.so to libv8.so.*.*.*.*
+ls libv8-*.so | %{__sed} 's/.so//' | %{__awk} -F'-' '{ print $1".so."$2 }' | xargs %{__mv} $( ls libv8-*.so )
 
 %install
 rm -rf %{buildroot}
@@ -41,8 +51,6 @@ rm -rf %{buildroot}
 %{__mkdir_p} %{buildroot}/%{_libdir}
 %{__install} -p -D -m 644 include/v8.h %{buildroot}/%{_includedir}/v8.h
 %{__install} -p -D -m 644 include/v8-debug.h %{buildroot}/%{_includedir}/v8-debug.h
-# Rename libv8-*.*.*.*.so to libv8.so.*.*.*.*
-ls libv8-*.so | %{__sed} 's/.so//' | %{__awk} -F'-' '{ print $1".so."$2 }' | xargs %{__mv} $( ls libv8-*.so )
 %{__install} -p -D -m 755 libv8.so.* %{buildroot}/%{_libdir}/
 ( cd %{buildroot}/%{_libdir}/ && ln -sf libv8.so.* libv8.so )
 
@@ -65,5 +73,8 @@ rm -rf %{buildroot}
 %{_libdir}/libv8.so
 
 %changelog
+* Sun Apr 25 2010 Silas Sewell <silas@sewell.ch> - 2.2.4.2-1
+- Update 2.2.4.2
+
 * Sun Jun 21 2009 Silas Sewell <silas@sewell.ch> - 1.2-0.20090621svnr2220
 - Initial build

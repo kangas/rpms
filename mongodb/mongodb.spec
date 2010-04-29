@@ -1,5 +1,5 @@
 Name:             mongodb
-Version:          1.4.1
+Version:          1.4.2
 Release:          1%{?dist}
 Summary:          High-performance, schema-free document-oriented database
 Group:            Applications/Databases
@@ -8,7 +8,6 @@ URL:              http://www.mongodb.org
 Source0:          http://downloads.mongodb.org/src/mongodb-src-r%{version}.tar.gz
 Source1:          mongodb.init
 Source2:          mongodb.logrotate
-Patch0:           mongodb-1.0.1.SConstruct.patch
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:    python-devel >= 2.6
@@ -29,7 +28,7 @@ Requires(pre):    shadow-utils
 MongoDB (from "humongous") is a scalable, high-performance, open source,
 schema-free, document-oriented database. Written in C++, MongoDB features:
 
- * Document-oriented storage (the simplicity and power of JSON-like data schemas)
+ * Document-oriented storage (simplicity and power of JSON-like data schemas)
  * Dynamic queries
  * Full index support, extending to inner-objects and embedded arrays
  * Query profiling
@@ -57,9 +56,6 @@ a high-performance, open source, schema-free document-oriented database.
 %prep
 %setup -q -n %{name}-src-r%{version}
 
-# Enable debuginfo
-%patch0 -p1
-
 # change dbpath
 %{__sed} -i 's|/data/db/|%{_sharedstatedir}/%{name}/|' db/pdfile.cpp db/db.cpp
 
@@ -67,15 +63,15 @@ a high-performance, open source, schema-free document-oriented database.
 scons %{?_smp_mflags} .
 
 %install
-%{__rm} -rf %{buildroot}
-scons %{?_smp_mflags} install --prefix=%{buildroot}%{_prefix}
+rm -rf %{buildroot}
+scons %{?_smp_mflags} install --prefix=%{buildroot}%{_prefix} --nostrip
 %{__mkdir} -p %{buildroot}%{_sharedstatedir}/%{name}
 %{__mkdir} -p %{buildroot}%{_localstatedir}/log/%{name}
 install -p -D -m 755 %{SOURCE1} %{buildroot}%{_initddir}/%{name}
 install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 %clean
-%{__rm} -rf %{buildroot}
+rm -rf %{buildroot}
 
 %pre
 getent group %{name} >/dev/null || groupadd -r %{name}
@@ -114,6 +110,9 @@ fi
 %{_libdir}/libmongoclient.a
 
 %changelog
+* Fri Apr 28 2010 Silas Sewell <silas@sewell.ch> - 1.4.2-1
+- Update to 1.4.2
+
 * Fri Apr 22 2010 Silas Sewell <silas@sewell.ch> - 1.4.1-1
 - Update to 1.4.1
 

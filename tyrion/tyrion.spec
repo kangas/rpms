@@ -3,17 +3,14 @@ Version:          0.0.1
 Release:          1%{?dist}
 Summary:          A systems automation framework
 Group:            Applications/System
-License:          GPLv2
+License:          BSD
 URL:              http://www.tyrion.org
-Source0:          %{name}-%{version}.tar.gz
+Source0:          http://github.com/downloads/tidg/tyrion/%{name}-%{version}.tar.gz
 Source1:          tyrion.logrotate
 Source2:          tyrion-node.init
-Source3:          tyrion-node.acl.conf
-Source4:          tyrion-node.node.conf
-Source5:          tyrion-node-wrapper
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:    gloox-devel
+BuildRequires:    txmpp-devel
 BuildRequires:    scons
 
 Requires:         %{name}-libs = %{version}-%{release}
@@ -29,7 +26,7 @@ This package contains the client application for interacting with a Tyrion
 node.
 
 %package          libs
-Summary:          Runtime library files for %{name}
+Summary:          Run-time library files for %{name}
 Group:            System Environment/Libraries
 
 %description      libs
@@ -56,19 +53,17 @@ scons %{?_smp_mflags} --flags="%{optflags}"
 
 %install
 rm -rf %{buildroot}
-scons %{?_smp_mflags} --flags="%{optflags}" install \
-  --prefix=%{buildroot} \
-  --bindir=%{_bindir} \
-  --libdir=%{_libdir} \
-  --sbindir=%{_sbindir}
+scons %{?_smp_mflags} --flags="%{optflags}" --install \
+  --bindir=%{buildroot}/%{_bindir} \
+  --libdir=%{buildroot}/%{_libdir} \
+  --sbindir=%{buildroot}/%{_sbindir}
 %{__mkdir} -p %{buildroot}%{_localstatedir}/log/%{name}
 %{__mkdir} -p %{buildroot}%{_localstatedir}/lib/%{name}
 %{__cp} -rp service %{buildroot}%{_sharedstatedir}/%{name}
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}-node
-install -p -D -m 600 %{SOURCE3} %{buildroot}%{_sysconfdir}/%{name}/acl.conf
-install -p -D -m 600 %{SOURCE4} %{buildroot}%{_sysconfdir}/%{name}/node.conf
-install -p -D -m 755 %{SOURCE5} %{buildroot}%{_sbindir}/tyrion-node-wrapper
+install -p -D -m 600 config/acl.conf %{buildroot}%{_sysconfdir}/%{name}/acl.conf
+install -p -D -m 600 config/node.conf %{buildroot}%{_sysconfdir}/%{name}/node.conf
 
 %clean
 rm -rf %{buildroot}
@@ -92,24 +87,23 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE NOTICE README.md client.conf.sample
+%doc AUTHORS LICENSE NOTICE README.md config/client.conf
 %{_bindir}/tyrion
 
 %files libs
 %defattr(-,root,root,-)
 %doc README.md
-%{_libdir}/*.so
+%{_libdir}/libtyrion.so
 
 %files node
 %defattr(-,root,root,-)
-%doc README.md acl.conf.sample node.conf.sample
+%doc README.md config/acl.conf config/node.conf
 %config(noreplace) %{_sysconfdir}/%{name}/acl.conf
 %config(noreplace) %{_sysconfdir}/%{name}/node.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %dir %{_localstatedir}/log/%{name}
 %{_initrddir}/%{name}-node
 %{_sbindir}/tyrion-node
-%{_sbindir}/tyrion-node-wrapper
 %{_localstatedir}/lib/%{name}
 
 %changelog

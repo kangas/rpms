@@ -9,7 +9,7 @@
 # Source function library.
 . /etc/rc.d/init.d/functions
 
-exec="/usr/sbin/tyrion-node-wrapper"
+exec="/usr/sbin/tyrion-node"
 config="/etc/tyrion/node.conf"
 logfile="/var/log/tyrion/node.out.log"
 
@@ -29,7 +29,7 @@ start() {
 
 stop() {
     echo -n $"Stopping tyrion-node: "
-    killproc tyrion-node-wrapper
+    killproc tyrion-node
     retval=$?
     echo
     [ $retval -eq 0 ] && rm -f $lockfile
@@ -46,7 +46,7 @@ reload() {
 }
 
 rh_status() {
-    status tyrion-node-wrapper
+    status tyrion-node
 }
 
 rh_status_q() {

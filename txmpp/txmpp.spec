@@ -1,13 +1,13 @@
-%define with_expat2 %{?_without_expat2: 0} %{?!_without_expat: 1}
+%global with_expat2 %{?_with_expat2: 1} %{?!_with_expat: 0}
 
 Name:             txmpp
-Version:          0.0.1
+Version:          0.0.2
 Release:          1%{?dist}
 Summary:          A C++ XMPP library
 Group:            Development/Libraries
 License:          BSD
-URL:              http://github.com/silas/txmpp
-Source0:          http://github.com/downloads/silas/txmpp/%{name}-%{version}.tar.gz
+URL:              http://github.com/tidg/txmpp
+Source0:          http://github.com/downloads/tidg/txmpp/%{name}-%{version}.tar.gz
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 %if %{with_expat2}
@@ -17,8 +17,6 @@ BuildRequires:    expat-devel >= 2.0.1
 %endif
 BuildRequires:    openssl-devel
 BuildRequires:    scons
-
-Requires:         %{name}-libs = %{version}-%{release}
 
 %description
 txmpp is a C++ XMPP library.
@@ -54,15 +52,19 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE README.md
+%doc AUTHORS CHANGELOG LICENSE README.md
 %{_libdir}/*.so.*
 
 %files devel
 %defattr(-,root,root,-)
-%doc LICENSE README.md
+%doc README.md
 %{_includedir}/txmpp
 %{_libdir}/*.so
 
 %changelog
+* Fri Jul 02 2010 Silas Sewell <silas@sewell.ch> - 0.0.2-1
+- Release 0.0.2
+- Include AUTHORS & CHANGELOG
+
 * Tue Jun 15 2010 Silas Sewell <silas@sewell.ch> - 0.0.1-1
 - Initial build

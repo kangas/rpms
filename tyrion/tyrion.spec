@@ -35,7 +35,7 @@ Tyrion is a systems automation framework.
 The %{name}-libs package contains libraries for running %{name} applications.
 
 %package          node
-Summary:          The Tyrion node daemon
+Summary:          A Tyrion node daemon
 Group:            Applications/System
 
 Requires:         %{name}-libs = %{version}-%{release}
@@ -45,8 +45,33 @@ Tyrion is a systems automation framework.
 
 The %{name}-node package contains the daemon for running a Tyrion node.
 
+%package          node-service-python
+Summary:          A Tyrion node Python service
+Group:            Applications/System
+
+Requires:         %{name}-node = %{version}-%{release}
+Requires:         python
+
+%description      node-service-python
+Tyrion is a systems automation framework.
+
+The %{name}-node-service-python package contains the node Python service.
+
+%package          node-service-ruby
+Summary:          A Tyrion node Ruby service
+Group:            Applications/System
+
+Requires:         %{name}-node = %{version}-%{release}
+Requires:         ruby
+
+%description      node-service-ruby
+Tyrion is a systems automation framework.
+
+The %{name}-node-service-ruby package contains the node Ruby service.
+
 %prep
 %setup -q
+%{__sed} -i "s|/usr/lib/tyrion/service|%{_libdir}/tyrion/service|g" config/node.conf
 
 %build
 scons %{?_smp_mflags} --flags="%{optflags}"
@@ -58,8 +83,8 @@ scons %{?_smp_mflags} --flags="%{optflags}" --install \
   --libdir=%{buildroot}/%{_libdir} \
   --sbindir=%{buildroot}/%{_sbindir}
 %{__mkdir} -p %{buildroot}%{_localstatedir}/log/%{name}
-%{__mkdir} -p %{buildroot}%{_localstatedir}/lib/%{name}
-%{__cp} -rp service %{buildroot}%{_sharedstatedir}/%{name}
+%{__mkdir} -p %{buildroot}%{_datarootdir}/%{name}
+%{__cp} -rp service %{buildroot}%{_datarootdir}/%{name}
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}-node
 install -p -D -m 600 config/acl.conf %{buildroot}%{_sysconfdir}/%{name}/acl.conf
@@ -104,7 +129,18 @@ fi
 %dir %{_localstatedir}/log/%{name}
 %{_initrddir}/%{name}-node
 %{_sbindir}/tyrion-node
-%{_localstatedir}/lib/%{name}
+%dir %{_datarootdir}/%{name}
+%{_datarootdir}/%{name}/service/org.tyrion.service.bash
+
+%files node-service-python
+%defattr(-,root,root,-)
+%doc README.md
+%{_datarootdir}/%{name}/service/org.tyrion.service.python
+
+%files node-service-ruby
+%defattr(-,root,root,-)
+%doc README.md
+%{_datarootdir}/%{name}/service/org.tyrion.service.ruby
 
 %changelog
 * Wed Jun 02 2010 Silas Sewell <silas@sewell.ch> - 0.0.1-1

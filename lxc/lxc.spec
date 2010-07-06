@@ -1,5 +1,5 @@
 Name:           lxc
-Version:        0.6.5
+Version:        0.7.1
 Release:        1%{?dist}
 Summary:        Linux Resource Containers
 
@@ -7,8 +7,6 @@ Group:          Applications/System
 License:        LGPLv2+
 URL:            http://lxc.sourceforge.net
 Source0:        http://lxc.sourceforge.net/download/lxc/%{name}-%{version}.tar.gz
-# Patch submitted in bug ID #2954017
-Patch0:         lxc-0.6.5-fix-sys-stat.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  automake
@@ -55,7 +53,6 @@ This package contains documentation for %{name}.
 
 %prep
 %setup -q
-%patch0 -p1
 
 %build
 ./autogen.sh
@@ -81,7 +78,6 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING README
 %{_bindir}/%{name}-*
-%{_libexecdir}/%{name}-init
 %{_mandir}/man*/%{name}*
 %{_sharedstatedir}/%{name}
 
@@ -89,6 +85,7 @@ find %{buildroot} -name '*.la' -delete
 %defattr(-,root,root,-)
 %doc COPYING
 %{_libdir}/liblxc.so.*
+%{_libdir}/lxc
 
 %files devel
 %defattr(-,root,root,-)
@@ -102,6 +99,9 @@ find %{buildroot} -name '*.la' -delete
 %{_docdir}/%{name}
 
 %changelog
+* Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 0.7.1-1
+- Update to 0.7.1
+
 * Wed Feb 17 2010 Silas Sewell <silas@sewell.ch> - 0.6.5-1
 - Update to latest release
 - Add /var/lib/lxc directory

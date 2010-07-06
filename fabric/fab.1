@@ -1,0 +1,86 @@
+.TH FAB 1 "July 6, 2010"
+.SH NAME
+fab - Simple Pythonic remote deployment tool
+.SH SYNOPSIS
+.PP
+\fB \fr\fIfab\fR [OPTIONS] \fR\fI[commands ...]\fR
+.SH DESCRIPTION
+.PP
+Fabric is designed to upload files and run shell commands on a number of
+servers in parallel or serially. These commands are grouped in tasks
+(which are regular Python functions).
+.SH OPTIONS
+.TP
+.B -h, --help
+show this help message and exit
+.TP
+.B -V, --version
+show program's version number and exit
+.TP
+.B -l, --list
+print list of possible commands and exit
+.TP
+.B -d COMMAND, --display=COMMAND
+print detailed info about a given command and exit
+.TP
+.B -r, --reject-unknown-hosts
+reject unknown hosts
+.TP
+.B -D, --disable-known-hosts
+do not load user known_hosts file
+.TP
+.B -u USER, --user=USER
+username to use when connecting to remote hosts
+.TP
+.B -p PASSWORD, --password=PASSWORD
+password for use with authentication and/or sudo
+.TP
+.B -H HOSTS, --hosts=HOSTS
+comma-separated list of hosts to operate on
+.TP
+.B -R ROLES, --roles=ROLES
+comma-separated list of roles to operate on
+.TP
+.B -i KEY_FILENAME
+path to SSH private key file. May be repeated.
+.TP
+.B -a, --no_agent
+don't use the running SSH agent
+.TP
+.B -k, --no-keys
+don't load private key files from ~/.ssh/
+.TP
+.B -f FABFILE, --fabfile=FABFILE
+Python module file to import, e.g. '../other.py'
+.TP
+.B -w, --warn-only
+warn, instead of abort, when commands fail
+.TP
+.B -s SHELL, --shell=SHELL
+specify a new shell, defaults to '/bin/bash -l -c'
+.TP
+.B -c RCFILE, --config=RCFILE
+specify location of config file to use
+.TP
+.B --hide=LEVELS
+comma-separated list of output levels to hide
+.TP
+.B --show=LEVELS
+comma-separated list of output levels to show
+.SH "AUTHOR"
+.PP
+Fabric was originally written by Christian Vest Hansen.
+.PP
+The current author list includes Rob Cowie, Jeff Forcier, Travis Cline,
+Niklas Lindström, Kevin Horn, Max Battcher, Alexander Artemenko, Dennis Schoen,
+Erick Dennis, Sverre Johansen, Michael Stephens, Armin Ronacher, Curt Micol,
+Patrick McNerthney, Steve Steiner, Ali Saifee, Jorge Vargas, Peter Ellis,
+Brian Rosner and Carl Meyer.
+.PP
+This manual page was originally written by Chris Lamb <lamby@debian.org> for the
+Debian project (but may be used by others).
+.PP
+It was updated by Silas Sewell <silas@sewell.ch> for the Fedora Project.
+.SH "SEE ALSO"
+.IP
+\fBssh\fP\fB(1)\fP

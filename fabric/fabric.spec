@@ -1,16 +1,18 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-%define package_name Fabric
+%global package_name Fabric
 
 Name:           fabric
-Version:        0.9.0
+Version:        0.9.1
 Release:        1%{?dist}
 Summary:        A simple Pythonic remote deployment tool
 
 Group:          Applications/System
 License:        BSD
-URL:            http://www.fabfile.org/
+URL:            http://www.fabfile.org
 Source0:        http://code.fabfile.org/projects/fabric/files/%{package_name}-%{version}.tar.gz
+# Upstream issue to add man page http://code.fabfile.org/issues/show/35
+Source1:        fab.1
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch
@@ -29,23 +31,30 @@ serially.
 
 %build
 %{__python} setup.py build
+%{__gzip} %{SOURCE1}
 
 %install
 %{__rm} -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 %{__rm} -fr %{buildroot}%{python_sitelib}/paramiko
+%{__install} -p -m 0644 -D %{SOURCE1}.gz %{buildroot}%{_mandir}/man1/fab.1.gz
 
 %clean
 %{__rm} -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS FAQ LICENSE README
+%doc AUTHORS LICENSE README
 %{_bindir}/fab
 %{python_sitelib}/fabric
 %{python_sitelib}/%{package_name}*%{version}*.egg-info
+%{_mandir}/man1/fab.1.gz
 
 %changelog
+* Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 0.9.1-1
+- Update to 0.9.1
+- Add man page
+
 * Mon Nov 09 2009 Silas Sewell <silas@sewell.ch> - 0.9.0-1
 - Update to 0.9.0
 

@@ -36,6 +36,9 @@ sed -i 's/\r//' TUTORIAL
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
+%check
+./setup.py test
+
 %clean
 rm -rf %{buildroot}
 
@@ -48,8 +51,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/mutagen-%{version}-*.egg-info
 
 %changelog
-* Tue Apr 20 2010 Silas Sewell <silas@sewell.ch> - 1.19-1
+* Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 1.19-1
 - Update to 1.19
+- Add tests
 
 * Thu Feb 18 2010 Silas Sewell <silas@sewell.ch> - 1.18-1
 - Update to 1.18

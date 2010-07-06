@@ -134,11 +134,11 @@ fi
 %{_mandir}/man3/t*.gz
 
 %changelog
-* Thu Mar 04 2010 Silas Sewell <silas@sewell.ch> - 1.1.40-1
+* Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 1.1.40-1
 - Update to 1.1.40
 
-* Thu Oct 22 2009 Silas Sewell <silas@sewell.ch> - 1.1.36-1
-- Update to 1.1.36
+* Tue Dec 22 2009  Deji Akingunola <dakingun@gmail.com> - 1.1.35-2
+- Rebuild for tokyocabinet soname bump
 
 * Wed Oct 07 2009 Silas Sewell <silas@sewell.ch> - 1.1.35-1
 - Update to 1.1.35

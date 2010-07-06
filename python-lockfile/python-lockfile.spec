@@ -9,8 +9,8 @@ Summary:        A platform-independent file locking module
 
 Group:          Development/Languages
 License:        MIT
-URL:            http://pypi.python.org/pypi/%{upstream_name}
-Source0:        http://smontanaro.dyndns.org/python/%{upstream_name}-%{version}.tar.gz
+URL:            http://code.google.com/p/pylockfile
+Source0:        http://pylockfile.googlecode.com/files/%{upstream_name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch
@@ -35,18 +35,25 @@ Windows) system calls.
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
+%check
+export PYTHONPATH="$( pwd ):$PYTHONPATH"
+%{__python} test/test_lockfile.py
+
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
 %doc ACKS LICENSE MANIFEST PKG-INFO README RELEASE-NOTES doc/
-%{python_sitelib}/%{upstream_name}.py*
+%{python_sitelib}/%{upstream_name}
 %{python_sitelib}/%{upstream_name}-%{version}-*.egg-info
 
 %changelog
-* Tue Apr 20 2010 Silas Sewell <silas@sewell.ch> - 0.9-1
-- Update to version 0.9
+* Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 0.9-1
+- Update to 0.9
+
+* Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 0.8-2
+- Bump for EL6 build
 
 * Thu Jul 23 2009 Silas Sewell <silas@sewell.ch> - 0.8-1
 - Initial build

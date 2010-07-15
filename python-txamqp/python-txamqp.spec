@@ -64,6 +64,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
+# Request LICENSE in https://bugs.launchpad.net/txamqp/+bug/605699
 %doc doc/CHANGES doc/README doc/THANKS src/examples/simple
 %dir %{python_sitelib}/%{upstream_name}
 %{python_sitelib}/%{upstream_name}/*.py*

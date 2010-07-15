@@ -61,6 +61,9 @@ This package contains documentation for %{name}.
 %{__sed} -i '/AM_LDFLAGS = -Wl,-E -Wl,-rpath -Wl,$(libdir)/d' src/lxc/Makefile.in
 %{__make} %{?_smp_mflags}
 
+%check
+%{__make} check
+
 %install
 %{__rm} -rf %{buildroot}
 %{__make} DESTDIR=%{buildroot} install

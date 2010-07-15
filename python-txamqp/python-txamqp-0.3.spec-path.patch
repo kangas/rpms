@@ -1,0 +1,53 @@
+diff -up python-txamqp-0.3/src/examples/simple/README.orig python-txamqp-0.3/src/examples/simple/README
+--- python-txamqp-0.3/src/examples/simple/README.orig	2010-07-14 22:28:07.674394596 -0600
++++ python-txamqp-0.3/src/examples/simple/README	2010-07-14 22:31:10.529021852 -0600
+@@ -13,10 +13,10 @@ Running
+ 1. Open two consoles:
+    a) In one of them run the txconsumer.py script:
+       $ python txconsumer.py host port vhost username password path_to_spec
+-      e.g. txconsumer.py localhost 5672 / guest guest ../../specs/standard/amqp0-8.xml
++      e.g. txconsumer.py localhost 5672 / guest guest /usr/share/amqp/amqp.0-8.xml
+    b) In the other one run the txpublisher.py script:
+       $ python txpublisher.py host port vhost username password path_to_spec content [count]
+-      e.g. txpublisher.py localhost 5672 / guest guest ../../specs/standard/amqp0-8.xml hello 1000
++      e.g. txpublisher.py localhost 5672 / guest guest /usr/share/amqp/amqp.0-8.xml hello 1000
+ 
+ Where:
+ - host: The host where the AMQP broker is located.
+@@ -29,9 +29,9 @@ Where:
+     is 'guest').
+ - path_to_spec: The path to the AMQP spec that you want to use. Keep in mind
+     that depending on the broker you use, you will need a different spec:
+-    - RabbitMQ 1.5.3: $TXAMQP_PATH/src/specs/standard/amqp0-8.xml
+-    - OpenAMQ 1.3c5: $TXAMQP_PATH/src/specs/standard/amqp0-9.xml
+-    - Qpid M3 (Java): $TXAMQP_PATH/src/specs/qpid/amqp.0-8.xml
++    - RabbitMQ 1.5.3: /usr/share/amqp/amqp.0-8.xml
++    - OpenAMQ 1.3c5: /usr/share/amqp/amqp.0-9.xml
++    - Qpid M3 (Java): /usr/share/amqp/amqp.0-8.xml
+ 
+ 2. You should see messages being sent from the second console and received
+    in the first one.
+diff -up python-txamqp-0.3/src/examples/simple/txconsumer.py.orig python-txamqp-0.3/src/examples/simple/txconsumer.py
+--- python-txamqp-0.3/src/examples/simple/txconsumer.py.orig	2010-07-14 22:12:35.941144143 -0600
++++ python-txamqp-0.3/src/examples/simple/txconsumer.py	2010-07-14 22:29:49.279394418 -0600
+@@ -44,7 +44,7 @@ if __name__ == "__main__":
+     import sys
+     if len(sys.argv) < 7:
+         print "%s host port vhost username password path_to_spec" % sys.argv[0]
+-        print "e.g. %s localhost 5672 / guest guest ../../specs/standard/amqp0-8.xml" % sys.argv[0]
++        print "e.g. python %s localhost 5672 / guest guest /usr/share/amqp/amqp.0-8.xml" % sys.argv[0]
+         sys.exit(1)
+ 
+     host = sys.argv[1]
+diff -up python-txamqp-0.3/src/examples/simple/txpublisher.py.orig python-txamqp-0.3/src/examples/simple/txpublisher.py
+--- python-txamqp-0.3/src/examples/simple/txpublisher.py.orig	2010-07-14 22:13:28.569168756 -0600
++++ python-txamqp-0.3/src/examples/simple/txpublisher.py	2010-07-14 22:30:01.131145004 -0600
+@@ -45,7 +45,7 @@ if __name__ == "__main__":
+     import sys
+     if len(sys.argv) < 8:
+         print "%s host port vhost username password path_to_spec content [count]" % sys.argv[0]
+-        print "e.g. %s localhost 5672 / guest guest ../../specs/standard/amqp0-8.xml hello 1000" % sys.argv[0]
++        print "e.g. python %s localhost 5672 / guest guest /usr/share/amqp/amqp.0-8.xml hello 1000" % sys.argv[0]
+         sys.exit(1)
+ 
+     host = sys.argv[1]

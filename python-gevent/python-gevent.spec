@@ -1,10 +1,14 @@
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
+%global _use_internal_dependency_generator 0
+%global __find_provides    %{_rpmconfigdir}/find-provides | grep -v core.so
+%global __find_requires    %{_rpmconfigdir}/find-requires | grep -v core.so
+
 %global upstream_name gevent
 
 Name:           python-%{upstream_name}
-Version:        0.12.2
-Release:        2%{?dist}
+Version:        0.13.0
+Release:        1%{?dist}
 Summary:        A coroutine-based Python networking library
 
 Group:          Development/Languages
@@ -52,6 +56,9 @@ rm -rf %{buildroot}
 %{python_sitearch}/%{upstream_name}-%{version}-*.egg-info
 
 %changelog
+* Wed Jul 14 2010 Silas Sewell <silas@sewell.ch> - 0.13.0-1
+- Update to 0.13.0
+
 * Fri Apr 23 2010 Silas Sewell <silas@sewell.ch> - 0.12.2-2
 - Remove setuptools requirement
 

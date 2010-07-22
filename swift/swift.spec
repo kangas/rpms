@@ -16,6 +16,7 @@ BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 
 Requires:       python(abi) >= 2.5
+Requires:       python-configobj
 Requires:       python-eventlet
 Requires:       python-simplejson
 Requires:       python-webob

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import datetime
 import gzip
 import optparse
@@ -73,7 +71,6 @@ def main(options):
             '[options]',
             '[url 1]',
             '[url 2]',
-            '...',
         ],
         option_list=[
             {'flags': '-c [concurrency]', 'description': 'Set the concurrency, default 50'},

@@ -1,16 +1,17 @@
-%define snapshot 20090828225927
+%define snapshot 20100703153359
 
 Name:             fossil
 Version:          0.0
-Release:          0.2.%{snapshot}%{?dist}
+Release:          0.3.%{snapshot}%{?dist}
 Summary:          A distributed SCM with bug tracking and wiki
 
 Group:            Development/Tools
-License:          GPLv2
+License:          BSD
 URL:              http://www.fossil-scm.org/
 Source0:          http://www.fossil-scm.org/download/%{name}-src-%{snapshot}.tar.gz
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
+BuildRequires:    openssl-devel
 BuildRequires:    zlib-devel
 
 %description
@@ -41,7 +42,7 @@ Documentation in HTML format for %{name}.
 
 %files
 %defattr(-,root,root,-)
-%doc COPYRIGHT-GPL2.txt
+%doc COPYRIGHT-BSD2.txt
 %{_bindir}/fossil
 
 %files doc
@@ -49,6 +50,10 @@ Documentation in HTML format for %{name}.
 %doc www
 
 %changelog
+* Tue Jul 20 2010 Silas Sewell <silas@sewell.ch> - 0.0-0.3.20100703153359
+- Update to 20100703153359
+- Add openssl dependency
+
 * Tue Sep 08 2009 Silas Sewell <silas@sewell.ch> - 0.0-0.2.20090828225927
 - Add doc subpackage and make optflags
 

@@ -48,7 +48,7 @@ reload() {
 }
 
 rh_status() {
-    status -p "$pidfile"
+    status -p $pidfile $name
 }
 
 rh_status_q() {

@@ -120,7 +120,7 @@ BuildRequires:    pyxattr
 OpenStack Object Storage (swift) aggregates commodity servers to work together
 in clusters for reliable, redundant, and large-scale storage of static objects.
 
-This package contains documentation files for the %{name}.
+This package contains documentation files for %{name}.
 
 %prep
 %setup -q

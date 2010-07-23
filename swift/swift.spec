@@ -32,6 +32,7 @@ Requires:         pyxattr
 Requires(post):   chkconfig
 Requires(postun): initscripts
 Requires(preun):  chkconfig
+Requires(pre):    shadow-utils
 
 %description
 OpenStack Object Storage (swift) aggregates commodity servers to work together
@@ -162,6 +163,13 @@ mkdir -p %{buildroot}/%{_sysconfdir}/%{name}/proxy-server
 
 %clean
 rm -rf %{buildroot}
+
+%pre
+getent group %{name} >/dev/null || groupadd -r %{name}
+getent passwd %{name} >/dev/null || \
+useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
+-c "Swift Daemons" %{name}
+exit 0
 
 %post account
 /sbin/chkconfig --add %{name}-account

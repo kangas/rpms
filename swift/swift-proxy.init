@@ -1,0 +1,89 @@
+#!/bin/sh
+
+### BEGIN INIT INFO
+# Provides:          swift-proxy
+# Required-Start:    $remote_fs
+# Required-Stop:     $remote_fs
+# Default-Stop:      0 1 6
+# Short-Description: Swift proxy server
+# Description:       Account server for swift.
+### END INIT INFO
+
+# swift-proxy:       swift proxy server
+#
+# chkconfig:         - 20 80
+# description:       Account server for swift.
+
+. /etc/rc.d/init.d/functions
+
+name="proxy-server"
+run="/usr/bin/swift-init $name"
+pidfile="/var/run/swift/$name.pid"
+
+[ -e "/etc/sysconfig/swift-$name" ] && . "/etc/sysconfig/swift-$name"
+
+lockfile="/var/lock/subsys/swift-proxy"
+
+start() {
+    $run start
+    retval=$?
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    $run stop
+    retval=$?
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    $run reload
+}
+
+rh_status() {
+    status -p "$pidfile"
+}
+
+rh_status_q() {
+    rh_status &> /dev/null
+}
+
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload}"
+        exit 2
+esac
+exit $?

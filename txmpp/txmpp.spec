@@ -1,8 +1,6 @@
-%global with_expat2 %{?_with_expat2: 1} %{?!_with_expat: 0}
-
 Name:             txmpp
 Version:          0.0.2
-Release:          2%{?dist}
+Release:          3%{?dist}
 Summary:          A C++ XMPP library
 Group:            System Environment/Libraries
 License:          BSD
@@ -10,11 +8,7 @@ URL:              http://www.tidg.org/txmpp
 Source0:          http://github.com/downloads/tidg/txmpp/%{name}-%{version}.tar.gz
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-%if %{with_expat2}
-BuildRequires:    expat2-devel >= 2.0.1
-%else
 BuildRequires:    expat-devel >= 2.0.1
-%endif
 BuildRequires:    openssl-devel
 BuildRequires:    scons
 
@@ -61,6 +55,9 @@ rm -rf %{buildroot}
 %{_libdir}/*.so
 
 %changelog
+* Sun Jul 25 2010 Silas Sewell <silas@sewell.ch> - 0.0.2-3
+- Remove expat2
+
 * Sun Jul 25 2010 Silas Sewell <silas@sewell.ch> - 0.0.2-2
 - Remove documentation from devel package
 - Fix main package group

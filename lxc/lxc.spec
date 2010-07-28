@@ -1,5 +1,5 @@
 Name:           lxc
-Version:        0.7.1
+Version:        0.7.2
 Release:        1%{?dist}
 Summary:        Linux Resource Containers
 
@@ -65,13 +65,15 @@ This package contains documentation for %{name}.
 %{__make} check
 
 %install
-%{__rm} -rf %{buildroot}
+rm -rf %{buildroot}
 %{__make} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 %{__mkdir} -p %{buildroot}%{_sharedstatedir}/%{name}
+# Remove templates
+rm -f %{buildroot}%{_libdir}/lxc/templates/lxc-*
 
 %clean
-%{__rm} -rf %{buildroot}
+rm -rf %{buildroot}
 
 %post libs -p /sbin/ldconfig
 
@@ -102,6 +104,10 @@ find %{buildroot} -name '*.la' -delete
 %{_docdir}/%{name}
 
 %changelog
+* Mon Jul 26 2010 Silas Sewell <silas@sewell.ch> - 0.7.2-1
+- Update to 0.7.2
+- Remove templates
+
 * Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 0.7.1-1
 - Update to 0.7.1
 

@@ -1,3 +1,5 @@
+# vim: filetype=sh
+
 . /etc/rc.d/init.d/functions
 
 swift_action() {
@@ -14,7 +16,7 @@ swift_action() {
     declare -i count=0
     for name in $( ls "/etc/swift/$server-server/" ); do
       $call "$server" \
-            "/etc/swift/$server/$name" \
+            "/etc/swift/$server-server/$name" \
             "/var/run/swift/$server-server/$count.pid"
       [ $? -ne 0 ] && retval=1
       count=$count+1
@@ -30,15 +32,28 @@ swift_start() {
   pid_file="$3"
 
   ulimit -n ${SWIFT_MAX_FILES-32768}
-  daemon --user ${SWIFT_USER-swift} --pidfile $pid_file \
-    "/usr/bin/$long_name $conf_file &>/dev/null &"
+  echo -n "Starting swift-$long_name: "
+  daemon --pidfile $pid_file \
+    "/usr/bin/swift-$long_name $conf_file &>/dev/null & echo \$! > $pid_file"
+  echo
 }
 
 swift_stop() {
   name="$1"
-  long_name="$NAME-server"
+  long_name="$name-server"
   conf_name="$2"
   pid_file="$3"
 
+  echo -n "Stopping swift-$long_name: "
   killproc -p $pid_file -d ${SWIFT_STOP_DELAY-15} $long_name
+  echo
+}
+
+swift_status() {
+  name="$1"
+  long_name="$name-server"
+  conf_name="$2"
+  pid_file="$3"
+
+  status -p $pid_file $long_name
 }

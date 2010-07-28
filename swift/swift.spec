@@ -142,7 +142,7 @@ rm doc/build/html/.buildinfo
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 # Init helper functions
-install -p -D -m 755 %{SOURCE1} %{buildroot}%{_datarootdir}/%{name}/functions
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_datarootdir}/%{name}/functions
 # Init scripts
 install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}-account
 install -p -D -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/%{name}-auth
@@ -157,12 +157,19 @@ done
 # Remove tests
 rm -fr %{buildroot}/%{python_sitelib}/test
 # Misc other
-mkdir -p %{buildroot}/%{_localstatedir}/%{name}
-mkdir -p %{buildroot}/%{_sysconfdir}/%{name}/account-server
-mkdir -p %{buildroot}/%{_sysconfdir}/%{name}/auth-server
-mkdir -p %{buildroot}/%{_sysconfdir}/%{name}/container-server
-mkdir -p %{buildroot}/%{_sysconfdir}/%{name}/object-server
-mkdir -p %{buildroot}/%{_sysconfdir}/%{name}/proxy-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/account-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/auth-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/container-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/object-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/proxy-server
+# Install pid directory
+install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}
+install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/account-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/auth-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/container-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/object-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/proxy-server
 
 %clean
 rm -rf %{buildroot}
@@ -247,25 +254,26 @@ fi
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS LICENSE README
+%dir %{_datarootdir}/%{name}/functions
+%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}
 %dir %{_sysconfdir}/%{name}
 %dir %{python_sitelib}/%{name}
 %{_bindir}/st
-%{_bindir}/swift-account-audit
-%{_bindir}/swift-drive-audit
-%{_bindir}/swift-get-nodes
-%{_bindir}/swift-init
-%{_bindir}/swift-ring-builder
-%{_bindir}/swift-stats-populate
-%{_bindir}/swift-stats-report
+%{_bindir}/%{name}-account-audit
+%{_bindir}/%{name}-drive-audit
+%{_bindir}/%{name}-get-nodes
+%{_bindir}/%{name}-init
+%{_bindir}/%{name}-ring-builder
+%{_bindir}/%{name}-stats-populate
+%{_bindir}/%{name}-stats-report
 %{_mandir}/man8/st.8.gz
-%{_mandir}/man8/swift-account-audit.8.gz
-%{_mandir}/man8/swift-drive-audit.8.gz
-%{_mandir}/man8/swift-get-nodes.8.gz
-%{_mandir}/man8/swift-init.8.gz
-%{_mandir}/man8/swift-ring-builder.8.gz
-%{_mandir}/man8/swift-stats-populate.8.gz
-%{_mandir}/man8/swift-stats-report.8.gz
-%{_datarootdir}/%{name}/functions
+%{_mandir}/man8/%{name}-account-audit.8.gz
+%{_mandir}/man8/%{name}-drive-audit.8.gz
+%{_mandir}/man8/%{name}-get-nodes.8.gz
+%{_mandir}/man8/%{name}-init.8.gz
+%{_mandir}/man8/%{name}-ring-builder.8.gz
+%{_mandir}/man8/%{name}-stats-populate.8.gz
+%{_mandir}/man8/%{name}-stats-report.8.gz
 %{python_sitelib}/%{name}/*.py*
 %{python_sitelib}/%{name}/common
 %{python_sitelib}/%{name}-%{version}-*.egg-info
@@ -273,70 +281,75 @@ fi
 %files account
 %defattr(-,root,root,-)
 %doc etc/account-server.conf-sample
+%dir %{_initrddir}/%{name}-account
+%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/account-server
 %dir %{_sysconfdir}/%{name}/account-server
-%{_bindir}/swift-account-auditor
-%{_bindir}/swift-account-reaper
-%{_bindir}/swift-account-replicator
-%{_bindir}/swift-account-server
-%{_initrddir}/%{name}-account
-%{_mandir}/man8/swift-account-auditor.8.gz
-%{_mandir}/man8/swift-account-reaper.8.gz
-%{_mandir}/man8/swift-account-replicator.8.gz
-%{_mandir}/man8/swift-account-server.8.gz
+%{_bindir}/%{name}-account-auditor
+%{_bindir}/%{name}-account-reaper
+%{_bindir}/%{name}-account-replicator
+%{_bindir}/%{name}-account-server
+%{_mandir}/man8/%{name}-account-auditor.8.gz
+%{_mandir}/man8/%{name}-account-reaper.8.gz
+%{_mandir}/man8/%{name}-account-replicator.8.gz
+%{_mandir}/man8/%{name}-account-server.8.gz
 %{python_sitelib}/%{name}/account
 
 %files auth
 %defattr(-,root,root,-)
 %doc etc/auth-server.conf-sample
+%dir %{_initrddir}/%{name}-auth
+%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/auth-server
 %dir %{_sysconfdir}/%{name}/auth-server
-%{_bindir}/swift-auth-create-account
-%{_bindir}/swift-auth-recreate-accounts
-%{_bindir}/swift-auth-server
-%{_initrddir}/%{name}-auth
-%{_mandir}/man8/swift-auth-create-account.8.gz
-%{_mandir}/man8/swift-auth-recreate-accounts.8.gz
-%{_mandir}/man8/swift-auth-server.8.gz
+%{_bindir}/%{name}-auth-create-account
+%{_bindir}/%{name}-auth-recreate-accounts
+%{_bindir}/%{name}-auth-server
+%{_mandir}/man8/%{name}-auth-create-account.8.gz
+%{_mandir}/man8/%{name}-auth-recreate-accounts.8.gz
+%{_mandir}/man8/%{name}-auth-server.8.gz
 %{python_sitelib}/%{name}/auth
 
 %files container
 %defattr(-,root,root,-)
 %doc etc/container-server.conf-sample
+%dir %{_initrddir}/%{name}-container
+%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/container-server
 %dir %{_sysconfdir}/%{name}/container-server
-%{_bindir}/swift-container-auditor
-%{_bindir}/swift-container-server
-%{_bindir}/swift-container-replicator
-%{_bindir}/swift-container-updater
-%{_initrddir}/%{name}-container
-%{_mandir}/man8/swift-container-auditor.8.gz
-%{_mandir}/man8/swift-container-server.8.gz
-%{_mandir}/man8/swift-container-replicator.8.gz
-%{_mandir}/man8/swift-container-updater.8.gz
+%{_bindir}/%{name}-container-auditor
+%{_bindir}/%{name}-container-server
+%{_bindir}/%{name}-container-replicator
+%{_bindir}/%{name}-container-updater
+%{_mandir}/man8/%{name}-container-auditor.8.gz
+%{_mandir}/man8/%{name}-container-server.8.gz
+%{_mandir}/man8/%{name}-container-replicator.8.gz
+%{_mandir}/man8/%{name}-container-updater.8.gz
 %{python_sitelib}/%{name}/container
 
 %files object
 %defattr(-,root,root,-)
 %doc etc/account-server.conf-sample etc/rsyncd.conf-sample
+%dir %{_initrddir}/%{name}-object
+%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/object-server
 %dir %{_sysconfdir}/%{name}/object-server
-%{_bindir}/swift-object-auditor
-%{_bindir}/swift-object-info
-%{_bindir}/swift-object-replicator
-%{_bindir}/swift-object-server
-%{_bindir}/swift-object-updater
-%{_initrddir}/%{name}-object
-%{_mandir}/man8/swift-object-auditor.8.gz
-%{_mandir}/man8/swift-object-info.8.gz
-%{_mandir}/man8/swift-object-replicator.8.gz
-%{_mandir}/man8/swift-object-server.8.gz
-%{_mandir}/man8/swift-object-updater.8.gz
+%{_bindir}/%{name}-object-auditor
+%{_bindir}/%{name}-object-info
+%{_bindir}/%{name}-object-replicator
+%{_bindir}/%{name}-object-server
+%{_bindir}/%{name}-object-updater
+%{_mandir}/man8/%{name}-object-auditor.8.gz
+%{_mandir}/man8/%{name}-object-info.8.gz
+%{_mandir}/man8/%{name}-object-replicator.8.gz
+%{_mandir}/man8/%{name}-object-server.8.gz
+%{_mandir}/man8/%{name}-object-updater.8.gz
 %{python_sitelib}/%{name}/obj
 
 %files proxy
 %defattr(-,root,root,-)
 %doc etc/proxy-server.conf-sample
+%dir %{_initrddir}/%{name}-proxy
+%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/proxy-server
 %dir %{_sysconfdir}/%{name}/proxy-server
-%{_bindir}/swift-proxy-server
-%{_initrddir}/%{name}-proxy
-%{_mandir}/man8/swift-proxy-server.8.gz
+%{_bindir}/%{name}-proxy-server
+%{_mandir}/man8/%{name}-proxy-server.8.gz
 %{python_sitelib}/%{name}/proxy
 
 %files doc
@@ -345,7 +358,8 @@ fi
 
 %changelog
 * Tue Jul 27 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-2
-- Update init scripts to be more native
+- Add swift user
+- Update init scripts
 
 * Sun Jul 18 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-1
 - Initial build

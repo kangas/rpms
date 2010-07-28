@@ -112,7 +112,7 @@ Summary:          Documentation for %{name}
 Group:            Documentation
 
 BuildRequires:    python-sphinx
-# Required for genereating docs
+# Required for generating docs
 BuildRequires:    python-eventlet
 BuildRequires:    python-simplejson
 BuildRequires:    python-webob

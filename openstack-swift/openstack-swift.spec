@@ -22,7 +22,6 @@ BuildArch:        noarch
 BuildRequires:    python-devel
 BuildRequires:    python-setuptools
 
-Requires:         python(abi) >= 2.6
 Requires:         python-configobj
 Requires:         python-eventlet >= 0.9.8
 Requires:         python-greenlet >= 0.3.1

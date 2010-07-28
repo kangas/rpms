@@ -15,24 +15,23 @@
 # description:       Account server for swift.
 
 . /etc/rc.d/init.d/functions
+. /usr/share/swift/functions
 
-name="container-server"
-run="/usr/bin/swift-init $name"
-pidfile="/var/run/swift/$name.pid"
+name="container"
 
 [ -e "/etc/sysconfig/swift-$name" ] && . "/etc/sysconfig/swift-$name"
 
 lockfile="/var/lock/subsys/swift-container"
 
 start() {
-    $run start
+    swift_action "$name" start
     retval=$?
     [ $retval -eq 0 ] && touch $lockfile
     return $retval
 }
 
 stop() {
-    $run stop
+    swift_action "$name" stop
     retval=$?
     [ $retval -eq 0 ] && rm -f $lockfile
     return $retval
@@ -43,18 +42,13 @@ restart() {
     start
 }
 
-reload() {
-    $run reload
-}
-
 rh_status() {
-    status -p "$pidfile" $name
+    swift_action "$name" status
 }
 
 rh_status_q() {
     rh_status &> /dev/null
 }
-
 
 case "$1" in
     start)
@@ -68,13 +62,6 @@ case "$1" in
     restart)
         $1
         ;;
-    reload)
-        rh_status_q || exit 7
-        $1
-        ;;
-    force-reload)
-        force_reload
-        ;;
     status)
         rh_status
         ;;
@@ -83,7 +70,7 @@ case "$1" in
         restart
         ;;
     *)
-        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload}"
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart}"
         exit 2
 esac
 exit $?

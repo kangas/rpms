@@ -2,18 +2,19 @@
 
 Name:             swift
 Version:          1.0.2
-Release:          1%{?dist}
+Release:          2%{?dist}
 Summary:          OpenStack Object Storage (swift)
 
 Group:            Development/Languages
 License:          ASL 2.0
 URL:              http://launchpad.net/swift
 Source0:          http://launchpad.net/%{name}/1.0/%{version}/+download/%{name}-%{version}.tar.gz
-Source1:          swift-account.init
-Source2:          swift-auth.init
-Source3:          swift-container.init
-Source4:          swift-object.init
-Source5:          swift-proxy.init
+Source1:          swift-functions
+Source2:          swift-account.init
+Source3:          swift-auth.init
+Source4:          swift-container.init
+Source5:          swift-object.init
+Source6:          swift-proxy.init
 Source20:         swift-create-man-stubs.py
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -140,16 +141,18 @@ rm doc/build/html/.buildinfo
 %install
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
+# Init helper functions
+install -p -D -m 755 %{SOURCE1} %{buildroot}%{_datarootdir}/%{name}/functions
 # Init scripts
-install -p -D -m 755 %{SOURCE1} %{buildroot}%{_initrddir}/%{name}-account
-install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}-auth
-install -p -D -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/%{name}-container
-install -p -D -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/%{name}-object
-install -p -D -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/%{name}-proxy
+install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}-account
+install -p -D -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/%{name}-auth
+install -p -D -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/%{name}-container
+install -p -D -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/%{name}-object
+install -p -D -m 755 %{SOURCE6} %{buildroot}%{_initrddir}/%{name}-proxy
 # Install man stubs
 for name in $( ls ./man ); do
-  mkdir -p "%{buildroot}%{_mandir}/$name"
-  cp "./man/$name/"*.gz "%{buildroot}%{_mandir}/$name"
+    mkdir -p "%{buildroot}%{_mandir}/$name"
+    cp "./man/$name/"*.gz "%{buildroot}%{_mandir}/$name"
 done
 # Remove tests
 rm -fr %{buildroot}/%{python_sitelib}/test
@@ -262,6 +265,7 @@ fi
 %{_mandir}/man8/swift-ring-builder.8.gz
 %{_mandir}/man8/swift-stats-populate.8.gz
 %{_mandir}/man8/swift-stats-report.8.gz
+%{_datarootdir}/%{name}/functions
 %{python_sitelib}/%{name}/*.py*
 %{python_sitelib}/%{name}/common
 %{python_sitelib}/%{name}-%{version}-*.egg-info
@@ -340,5 +344,8 @@ fi
 %doc LICENSE doc/build/html
 
 %changelog
+* Tue Jul 27 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-2
+- Update init scripts to be more native
+
 * Sun Jul 18 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-1
 - Initial build

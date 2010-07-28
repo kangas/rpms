@@ -1,27 +1,27 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          swift-container
+# Provides:          openstack-swift-proxy
 # Required-Start:    $remote_fs
 # Required-Stop:     $remote_fs
 # Default-Stop:      0 1 6
-# Short-Description: Swift container server
+# Short-Description: Swift proxy server
 # Description:       Account server for swift.
 ### END INIT INFO
 
-# swift-container:   swift container server
+# openstack-swift-proxy: swift proxy server
 #
-# chkconfig:         - 20 80
-# description:       Account server for swift.
+# chkconfig: - 20 80
+# description: Proxy server for swift.
 
 . /etc/rc.d/init.d/functions
-. /usr/share/swift/functions
+. /usr/share/openstack-swift/functions
 
-name="container"
+name="proxy"
 
-[ -e "/etc/sysconfig/swift-$name" ] && . "/etc/sysconfig/swift-$name"
+[ -e "/etc/sysconfig/openstack-swift-$name" ] && . "/etc/sysconfig/openstack-swift-$name"
 
-lockfile="/var/lock/subsys/swift-container"
+lockfile="/var/lock/subsys/openstack-swift-proxy"
 
 start() {
     swift_action "$name" start
@@ -49,6 +49,7 @@ rh_status() {
 rh_status_q() {
     rh_status &> /dev/null
 }
+
 
 case "$1" in
     start)

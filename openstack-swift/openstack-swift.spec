@@ -1,22 +1,22 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
-Name:             swift
+Name:             openstack-swift
 Version:          1.0.2
-Release:          3%{?dist}
+Release:          4%{?dist}
 Summary:          OpenStack Object Storage (swift)
 
 Group:            Development/Languages
 License:          ASL 2.0
 URL:              http://launchpad.net/swift
-Source0:          http://launchpad.net/%{name}/1.0/%{version}/+download/%{name}-%{version}.tar.gz
-Source1:          swift-functions
-Source2:          swift-account.init
-Source3:          swift-auth.init
-Source4:          swift-container.init
-Source5:          swift-object.init
-Source6:          swift-proxy.init
-Source20:         swift-create-man-stubs.py
-BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Source0:          http://launchpad.net/swift/1.0/%{version}/+download/swift-%{version}.tar.gz
+Source1:          openstack-swift-functions
+Source2:          openstack-swift-account.init
+Source3:          openstack-swift-auth.init
+Source4:          openstack-swift-container.init
+Source5:          openstack-swift-object.init
+Source6:          openstack-swift-proxy.init
+Source20:         openstack-swift-create-man-stubs.py
+BuildRoot:        %{_tmppath}/swift-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:        noarch
 BuildRequires:    python-devel
@@ -125,7 +125,7 @@ in clusters for reliable, redundant, and large-scale storage of static objects.
 This package contains documentation files for %{name}.
 
 %prep
-%setup -q
+%setup -q -n swift-%{version}
 # Fix wrong-file-end-of-line-encoding warning
 sed -i 's/\r//' LICENSE
 
@@ -157,206 +157,209 @@ done
 # Remove tests
 rm -fr %{buildroot}/%{python_sitelib}/test
 # Misc other
-install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}
-install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/account-server
-install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/auth-server
-install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/container-server
-install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/object-server
-install -d -m 755 %{buildroot}%{_sysconfdir}/%{name}/proxy-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/swift
+install -d -m 755 %{buildroot}%{_sysconfdir}/swift/account-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/swift/auth-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/swift/container-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/swift/object-server
+install -d -m 755 %{buildroot}%{_sysconfdir}/swift/proxy-server
 # Install pid directory
-install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}
-install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/account-server
-install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/auth-server
-install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/container-server
-install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/object-server
-install -d -m 755 %{buildroot}%{_localstatedir}/run/%{name}/proxy-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/swift
+install -d -m 755 %{buildroot}%{_localstatedir}/run/swift/account-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/swift/auth-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/swift/container-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/swift/object-server
+install -d -m 755 %{buildroot}%{_localstatedir}/run/swift/proxy-server
 
 %clean
 rm -rf %{buildroot}
 
 %pre
-getent group %{name} >/dev/null || groupadd -r %{name}
-getent passwd %{name} >/dev/null || \
-useradd -r -g %{name} -d %{_sharedstatedir}/%{name} -s /sbin/nologin \
--c "Swift Daemons" %{name}
+getent group swift >/dev/null || groupadd -r swift
+getent passwd swift >/dev/null || \
+useradd -r -g swift -d %{_sharedstatedir}/swift -s /sbin/nologin \
+-c "Swift Daemons" swift
 exit 0
 
 %post account
-/sbin/chkconfig --add %{name}-account
+/sbin/chkconfig --add swift-account
 
 %preun account
 if [ $1 = 0 ] ; then
-    /sbin/service %{name}-account stop >/dev/null 2>&1
-    /sbin/chkconfig --del %{name}-account
+    /sbin/service swift-account stop >/dev/null 2>&1
+    /sbin/chkconfig --del swift-account
 fi
 
 %postun account
 if [ "$1" -ge "1" ] ; then
-    /sbin/service %{name}-account condrestart >/dev/null 2>&1 || :
+    /sbin/service swift-account condrestart >/dev/null 2>&1 || :
 fi
 
 %post auth
-/sbin/chkconfig --add %{name}-auth
+/sbin/chkconfig --add swift-auth
 
 %preun auth
 if [ $1 = 0 ] ; then
-    /sbin/service %{name}-auth stop >/dev/null 2>&1
-    /sbin/chkconfig --del %{name}-auth
+    /sbin/service swift-auth stop >/dev/null 2>&1
+    /sbin/chkconfig --del swift-auth
 fi
 
 %postun auth
 if [ "$1" -ge "1" ] ; then
-    /sbin/service %{name}-auth condrestart >/dev/null 2>&1 || :
+    /sbin/service swift-auth condrestart >/dev/null 2>&1 || :
 fi
 
 %post container
-/sbin/chkconfig --add %{name}-container
+/sbin/chkconfig --add swift-container
 
 %preun container
 if [ $1 = 0 ] ; then
-    /sbin/service %{name}-container stop >/dev/null 2>&1
-    /sbin/chkconfig --del %{name}-container
+    /sbin/service swift-container stop >/dev/null 2>&1
+    /sbin/chkconfig --del swift-container
 fi
 
 %postun container
 if [ "$1" -ge "1" ] ; then
-    /sbin/service %{name}-container condrestart >/dev/null 2>&1 || :
+    /sbin/service swift-container condrestart >/dev/null 2>&1 || :
 fi
 
 %post object
-/sbin/chkconfig --add %{name}-object
+/sbin/chkconfig --add swift-object
 
 %preun object
 if [ $1 = 0 ] ; then
-    /sbin/service %{name}-object stop >/dev/null 2>&1
-    /sbin/chkconfig --del %{name}-object
+    /sbin/service swift-object stop >/dev/null 2>&1
+    /sbin/chkconfig --del swift-object
 fi
 
 %postun object
 if [ "$1" -ge "1" ] ; then
-    /sbin/service %{name}-object condrestart >/dev/null 2>&1 || :
+    /sbin/service swift-object condrestart >/dev/null 2>&1 || :
 fi
 
 %post proxy
-/sbin/chkconfig --add %{name}-proxy
+/sbin/chkconfig --add swift-proxy
 
 %preun proxy
 if [ $1 = 0 ] ; then
-    /sbin/service %{name}-proxy stop >/dev/null 2>&1
-    /sbin/chkconfig --del %{name}-proxy
+    /sbin/service swift-proxy stop >/dev/null 2>&1
+    /sbin/chkconfig --del swift-proxy
 fi
 
 %postun proxy
 if [ "$1" -ge "1" ] ; then
-    /sbin/service %{name}-proxy condrestart >/dev/null 2>&1 || :
+    /sbin/service swift-proxy condrestart >/dev/null 2>&1 || :
 fi
 
 %files
 %defattr(-,root,root,-)
 %doc AUTHORS LICENSE README
 %dir %{_datarootdir}/%{name}/functions
-%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}
-%dir %{_sysconfdir}/%{name}
-%dir %{python_sitelib}/%{name}
+%dir %attr(0755, swift, root) %{_localstatedir}/run/swift
+%dir %{_sysconfdir}/swift
+%dir %{python_sitelib}/swift
 %{_bindir}/st
-%{_bindir}/%{name}-account-audit
-%{_bindir}/%{name}-drive-audit
-%{_bindir}/%{name}-get-nodes
-%{_bindir}/%{name}-init
-%{_bindir}/%{name}-ring-builder
-%{_bindir}/%{name}-stats-populate
-%{_bindir}/%{name}-stats-report
+%{_bindir}/swift-account-audit
+%{_bindir}/swift-drive-audit
+%{_bindir}/swift-get-nodes
+%{_bindir}/swift-init
+%{_bindir}/swift-ring-builder
+%{_bindir}/swift-stats-populate
+%{_bindir}/swift-stats-report
 %{_mandir}/man8/st.8.gz
-%{_mandir}/man8/%{name}-account-audit.8.gz
-%{_mandir}/man8/%{name}-drive-audit.8.gz
-%{_mandir}/man8/%{name}-get-nodes.8.gz
-%{_mandir}/man8/%{name}-init.8.gz
-%{_mandir}/man8/%{name}-ring-builder.8.gz
-%{_mandir}/man8/%{name}-stats-populate.8.gz
-%{_mandir}/man8/%{name}-stats-report.8.gz
-%{python_sitelib}/%{name}/*.py*
-%{python_sitelib}/%{name}/common
-%{python_sitelib}/%{name}-%{version}-*.egg-info
+%{_mandir}/man8/swift-account-audit.8.gz
+%{_mandir}/man8/swift-drive-audit.8.gz
+%{_mandir}/man8/swift-get-nodes.8.gz
+%{_mandir}/man8/swift-init.8.gz
+%{_mandir}/man8/swift-ring-builder.8.gz
+%{_mandir}/man8/swift-stats-populate.8.gz
+%{_mandir}/man8/swift-stats-report.8.gz
+%{python_sitelib}/swift/*.py*
+%{python_sitelib}/swift/common
+%{python_sitelib}/swift-%{version}-*.egg-info
 
 %files account
 %defattr(-,root,root,-)
 %doc etc/account-server.conf-sample
 %dir %{_initrddir}/%{name}-account
-%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/account-server
-%dir %{_sysconfdir}/%{name}/account-server
-%{_bindir}/%{name}-account-auditor
-%{_bindir}/%{name}-account-reaper
-%{_bindir}/%{name}-account-replicator
-%{_bindir}/%{name}-account-server
-%{_mandir}/man8/%{name}-account-auditor.8.gz
-%{_mandir}/man8/%{name}-account-reaper.8.gz
-%{_mandir}/man8/%{name}-account-replicator.8.gz
-%{_mandir}/man8/%{name}-account-server.8.gz
-%{python_sitelib}/%{name}/account
+%dir %attr(0755, swift, root) %{_localstatedir}/run/swift/account-server
+%dir %{_sysconfdir}/swift/account-server
+%{_bindir}/swift-account-auditor
+%{_bindir}/swift-account-reaper
+%{_bindir}/swift-account-replicator
+%{_bindir}/swift-account-server
+%{_mandir}/man8/swift-account-auditor.8.gz
+%{_mandir}/man8/swift-account-reaper.8.gz
+%{_mandir}/man8/swift-account-replicator.8.gz
+%{_mandir}/man8/swift-account-server.8.gz
+%{python_sitelib}/swift/account
 
 %files auth
 %defattr(-,root,root,-)
 %doc etc/auth-server.conf-sample
 %dir %{_initrddir}/%{name}-auth
-%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/auth-server
-%dir %{_sysconfdir}/%{name}/auth-server
-%{_bindir}/%{name}-auth-create-account
-%{_bindir}/%{name}-auth-recreate-accounts
-%{_bindir}/%{name}-auth-server
-%{_mandir}/man8/%{name}-auth-create-account.8.gz
-%{_mandir}/man8/%{name}-auth-recreate-accounts.8.gz
-%{_mandir}/man8/%{name}-auth-server.8.gz
-%{python_sitelib}/%{name}/auth
+%dir %attr(0755, swift, root) %{_localstatedir}/run/swift/auth-server
+%dir %{_sysconfdir}/swift/auth-server
+%{_bindir}/swift-auth-create-account
+%{_bindir}/swift-auth-recreate-accounts
+%{_bindir}/swift-auth-server
+%{_mandir}/man8/swift-auth-create-account.8.gz
+%{_mandir}/man8/swift-auth-recreate-accounts.8.gz
+%{_mandir}/man8/swift-auth-server.8.gz
+%{python_sitelib}/swift/auth
 
 %files container
 %defattr(-,root,root,-)
 %doc etc/container-server.conf-sample
 %dir %{_initrddir}/%{name}-container
-%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/container-server
-%dir %{_sysconfdir}/%{name}/container-server
-%{_bindir}/%{name}-container-auditor
-%{_bindir}/%{name}-container-server
-%{_bindir}/%{name}-container-replicator
-%{_bindir}/%{name}-container-updater
-%{_mandir}/man8/%{name}-container-auditor.8.gz
-%{_mandir}/man8/%{name}-container-server.8.gz
-%{_mandir}/man8/%{name}-container-replicator.8.gz
-%{_mandir}/man8/%{name}-container-updater.8.gz
-%{python_sitelib}/%{name}/container
+%dir %attr(0755, swift, root) %{_localstatedir}/run/swift/container-server
+%dir %{_sysconfdir}/swift/container-server
+%{_bindir}/swift-container-auditor
+%{_bindir}/swift-container-server
+%{_bindir}/swift-container-replicator
+%{_bindir}/swift-container-updater
+%{_mandir}/man8/swift-container-auditor.8.gz
+%{_mandir}/man8/swift-container-server.8.gz
+%{_mandir}/man8/swift-container-replicator.8.gz
+%{_mandir}/man8/swift-container-updater.8.gz
+%{python_sitelib}/swift/container
 
 %files object
 %defattr(-,root,root,-)
 %doc etc/account-server.conf-sample etc/rsyncd.conf-sample
 %dir %{_initrddir}/%{name}-object
-%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/object-server
-%dir %{_sysconfdir}/%{name}/object-server
-%{_bindir}/%{name}-object-auditor
-%{_bindir}/%{name}-object-info
-%{_bindir}/%{name}-object-replicator
-%{_bindir}/%{name}-object-server
-%{_bindir}/%{name}-object-updater
-%{_mandir}/man8/%{name}-object-auditor.8.gz
-%{_mandir}/man8/%{name}-object-info.8.gz
-%{_mandir}/man8/%{name}-object-replicator.8.gz
-%{_mandir}/man8/%{name}-object-server.8.gz
-%{_mandir}/man8/%{name}-object-updater.8.gz
-%{python_sitelib}/%{name}/obj
+%dir %attr(0755, swift, root) %{_localstatedir}/run/swift/object-server
+%dir %{_sysconfdir}/swift/object-server
+%{_bindir}/swift-object-auditor
+%{_bindir}/swift-object-info
+%{_bindir}/swift-object-replicator
+%{_bindir}/swift-object-server
+%{_bindir}/swift-object-updater
+%{_mandir}/man8/swift-object-auditor.8.gz
+%{_mandir}/man8/swift-object-info.8.gz
+%{_mandir}/man8/swift-object-replicator.8.gz
+%{_mandir}/man8/swift-object-server.8.gz
+%{_mandir}/man8/swift-object-updater.8.gz
+%{python_sitelib}/swift/obj
 
 %files proxy
 %defattr(-,root,root,-)
 %doc etc/proxy-server.conf-sample
 %dir %{_initrddir}/%{name}-proxy
-%dir %attr(0755, swift, root) %{_localstatedir}/run/%{name}/proxy-server
-%dir %{_sysconfdir}/%{name}/proxy-server
-%{_bindir}/%{name}-proxy-server
-%{_mandir}/man8/%{name}-proxy-server.8.gz
-%{python_sitelib}/%{name}/proxy
+%dir %attr(0755, swift, root) %{_localstatedir}/run/swift/proxy-server
+%dir %{_sysconfdir}/swift/proxy-server
+%{_bindir}/swift-proxy-server
+%{_mandir}/man8/swift-proxy-server.8.gz
+%{python_sitelib}/swift/proxy
 
 %files doc
 %defattr(-,root,root,-)
 %doc LICENSE doc/build/html
 
 %changelog
+* Wed Jul 28 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-4
+- Rename to openstack-swift
+
 * Wed Jul 28 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-3
 - Fix return value in swift-functions
 

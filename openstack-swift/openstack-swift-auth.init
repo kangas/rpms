@@ -1,27 +1,27 @@
 #!/bin/sh
 
 ### BEGIN INIT INFO
-# Provides:          swift-object
+# Provides:          openstack-swift-auth
 # Required-Start:    $remote_fs
 # Required-Stop:     $remote_fs
 # Default-Stop:      0 1 6
-# Short-Description: Swift object server
-# Description:       Account server for swift.
+# Short-Description: Swift auth server
+# Description:       Auth server for swift.
 ### END INIT INFO
 
-# swift-object:      swift object server
+# openstack-swift-auth: swift auth server
 #
-# chkconfig:         - 20 80
-# description:       Account server for swift.
+# chkconfig: - 20 80
+# description: Auth server for swift.
 
 . /etc/rc.d/init.d/functions
-. /usr/share/swift/functions
+. /usr/share/openstack-swift/functions
 
-name="object"
+name="auth"
 
-[ -e "/etc/sysconfig/swift-$name" ] && . "/etc/sysconfig/swift-$name"
+[ -e "/etc/sysconfig/openstack-swift-$name" ] && . "/etc/sysconfig/openstack-swift-$name"
 
-lockfile="/var/lock/subsys/swift-object"
+lockfile="/var/lock/subsys/openstack-swift-auth"
 
 start() {
     swift_action "$name" start
@@ -49,7 +49,6 @@ rh_status() {
 rh_status_q() {
     rh_status &> /dev/null
 }
-
 
 case "$1" in
     start)

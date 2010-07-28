@@ -35,7 +35,7 @@ swift_start() {
   echo -n "Starting swift-$long_name: "
   daemon --pidfile $pid_file \
     "/usr/bin/swift-$long_name $conf_file &>/dev/null & echo \$! > $pid_file"
-  retval="$?"
+  retval=$?
   echo
   return $retval
 }
@@ -48,7 +48,7 @@ swift_stop() {
 
   echo -n "Stopping swift-$long_name: "
   killproc -p $pid_file -d ${SWIFT_STOP_DELAY-15} $long_name
-  retval="$?"
+  retval=$?
   echo
   return $retval
 }

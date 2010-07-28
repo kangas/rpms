@@ -2,7 +2,7 @@
 
 Name:             swift
 Version:          1.0.2
-Release:          2%{?dist}
+Release:          3%{?dist}
 Summary:          OpenStack Object Storage (swift)
 
 Group:            Development/Languages
@@ -357,6 +357,9 @@ fi
 %doc LICENSE doc/build/html
 
 %changelog
+* Wed Jul 28 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-3
+- Fix return value in swift-functions
+
 * Tue Jul 27 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-2
 - Add swift user
 - Update init scripts

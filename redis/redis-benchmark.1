@@ -1,0 +1,61 @@
+.TH REDIS-BENCHMARK 1 "July 28, 2010"
+.SH NAME
+redis-benchmark - Redis benchmarking tool
+.SH SYNOPSIS
+.PP
+.B redis-benchmark
+[-h host]
+[-p port]
+[-c clients]
+[-n requests]
+[-k <boolean>]
+.SH DESCRIPTION
+.PP
+This is a tool for benchmarking Redis.
+.SH OPTIONS
+.TP
+.B -h
+Server hostname (default 127.0.0.1).
+.TP
+.B -p
+Server port (default 6379
+.TP
+.B -c
+Number of parallel connections (default 50)
+.TP
+.B -n
+Total number of requests (default 10000)
+.TP
+.B -d
+Data size of SET/GET value in bytes (default 2)
+.TP
+.B -k
+1=keep alive 0=reconnect (default 1)
+.TP
+.B -r
+Use random keys for SET/GET/INCR. Using this option the benchmark will get/set
+keys in the form mykey_rand000000012456 instead of constant keys, the
+<keyspacelen> argument determines the max number of values for the random
+number. For instance if set to 10 only rand000000000000 - rand000000000009 range
+will be allowed.
+.TP
+.B -q
+Quiet. Just show query/sec values
+.TP
+.B -l
+Loop. Run the tests forever
+.TP
+.B -I
+Idle mode. Just open N idle connections and wait.
+.TP
+.B -D
+Debug mode. more verbose.
+.SH "EXAMPLES"
+redis-benchmark -n 100000
+.SH "AUTHOR"
+.PP
+Redis was written by Salvatore Sanfilippo.
+.PP
+This stub was created by Silas Sewell <silas@sewell.ch> for the Fedora Project.
+.SH "SEE ALSO"
+tyrion-cli(1), tyrion-stat(1)

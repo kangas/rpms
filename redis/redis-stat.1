@@ -1,0 +1,36 @@
+.TH REDIS-STAT 1 "July 28, 2010"
+.SH NAME
+redis-stat - Get stats from Redis
+.SH SYNOPSIS
+.PP
+.B redis-stat
+<type>
+<options>
+.SH DESCRIPTION
+.PP
+This is a tool to get stats from Redis.
+.SH OPTIONS
+.TP
+.B overview
+The default type which prints general information about a Redis instance.
+.TP
+.B latency
+A type which measures Redis server latency.
+.TP
+.B host <hostname>
+Server hostname (default 127.0.0.1)
+.TP
+.B port <port>
+Server port (default 6379)
+.TP
+.B delay <milliseconds>
+Delay between requests (default: 1000 ms, 1 second)
+.SH "EXAMPLES"
+redis-stat overview
+.SH "AUTHOR"
+.PP
+Redis was written by Salvatore Sanfilippo.
+.PP
+This stub was created by Silas Sewell <silas@sewell.ch> for the Fedora Project.
+.SH "SEE ALSO"
+tyrion-benchmark(1), tyrion-cli(1)

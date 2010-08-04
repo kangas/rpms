@@ -177,7 +177,7 @@ rm -rf %{buildroot}
 getent group swift >/dev/null || groupadd -r swift
 getent passwd swift >/dev/null || \
 useradd -r -g swift -d %{_sharedstatedir}/swift -s /sbin/nologin \
--c "Swift Daemons" swift
+-c "OpenStack Swift Daemons" swift
 exit 0
 
 %post account

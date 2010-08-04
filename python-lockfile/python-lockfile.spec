@@ -3,8 +3,9 @@
 %define upstream_name lockfile
 
 Name:           python-%{upstream_name}
-Version:        0.9
+Version:        0.8
 Release:        1%{?dist}
+Epoch:          1
 Summary:        A platform-independent file locking module
 
 Group:          Development/Languages
@@ -35,20 +36,22 @@ Windows) system calls.
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
-%check
-export PYTHONPATH="$( pwd ):$PYTHONPATH"
-%{__python} test/test_lockfile.py
-
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
 %doc ACKS LICENSE MANIFEST PKG-INFO README RELEASE-NOTES doc/
-%{python_sitelib}/%{upstream_name}
+%{python_sitelib}/%{upstream_name}.py*
 %{python_sitelib}/%{upstream_name}-%{version}-*.egg-info
 
 %changelog
+* Tue Aug 03 2010 Silas Sewell <silas@sewell.ch> - 1:0.8-1
+- Update to 0.8, increase epoch
+
+* Thu Jul 22 2010 David Malcolm <dmalcolm@redhat.com> - 0.9-2
+- Rebuilt for https://fedoraproject.org/wiki/Features/Python_2.7/MassRebuild
+
 * Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 0.9-1
 - Update to 0.9
 

@@ -3,7 +3,7 @@
 # tyrion-node  init file for starting up the Tyrion node
 #
 # chkconfig:   - 20 80
-# description: Starts and stops the Tyrion daemon that handles all \
+# description: Starts and stops the Tyrion node daemon that handles all \
 #              service requests.
 
 # Source function library.
@@ -11,7 +11,8 @@
 
 exec="/usr/sbin/tyrion-node"
 config="/etc/tyrion/node.conf"
-logfile="/var/log/tyrion/node.out.log"
+logfile="/var/log/tyrion-node/node.out.log"
+pidfile="/var/run/tyrion-node.pid"
 
 [ -e /etc/sysconfig/tyrion-node ] && . /etc/sysconfig/tyrion-node
 
@@ -20,7 +21,8 @@ lockfile=/var/lock/subsys/tyrion-node
 start() {
     [ -x $exec ] || exit 5
     echo -n $"Starting tyrion-node: "
-    daemon --user root "$exec -c $config >> $logfile 2>&1 &"
+    daemon --user ${TYRION_NODE_USER-root} --pidfile $pidfile \
+      "$exec -c $config >> $logfile 2>&1 & echo \$! > $pidfile"
     retval=$?
     echo
     [ $retval -eq 0 ] && touch $lockfile
@@ -29,7 +31,7 @@ start() {
 
 stop() {
     echo -n $"Stopping tyrion-node: "
-    killproc tyrion-node
+    killproc -p $pidfile tyrion-node
     retval=$?
     echo
     [ $retval -eq 0 ] && rm -f $lockfile
@@ -42,11 +44,15 @@ restart() {
 }
 
 reload() {
-    killproc tyrion-node -HUP
+    echo -n $"Reloading tyrion-node: "
+    killproc -p $pidfile tyrion-node -HUP
+    retval=$?
+    echo
+    return $retval
 }
 
 rh_status() {
-    status tyrion-node
+    status -p $pidfile tyrion-node
 }
 
 rh_status_q() {
@@ -69,9 +75,6 @@ case "$1" in
     reload)
         rh_status_q || exit 7
         $1
-        ;;
-    force-reload)
-        force_reload
         ;;
     status)
         rh_status

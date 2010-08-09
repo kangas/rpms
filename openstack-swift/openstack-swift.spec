@@ -1,24 +1,27 @@
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
+%endif
 
 Name:             openstack-swift
 Version:          1.0.2
-Release:          4%{?dist}
+Release:          5%{?dist}
 Summary:          OpenStack Object Storage (swift)
 
 Group:            Development/Languages
 License:          ASL 2.0
 URL:              http://launchpad.net/swift
 Source0:          http://launchpad.net/swift/1.0/%{version}/+download/swift-%{version}.tar.gz
-Source1:          openstack-swift-functions
-Source2:          openstack-swift-account.init
-Source3:          openstack-swift-auth.init
-Source4:          openstack-swift-container.init
-Source5:          openstack-swift-object.init
-Source6:          openstack-swift-proxy.init
-Source20:         openstack-swift-create-man-stubs.py
+Source1:          %{name}-functions
+Source2:          %{name}-account.init
+Source3:          %{name}-auth.init
+Source4:          %{name}-container.init
+Source5:          %{name}-object.init
+Source6:          %{name}-proxy.init
+Source20:         %{name}-create-man-stubs.py
 BuildRoot:        %{_tmppath}/swift-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:        noarch
+BuildRequires:    dos2unix
 BuildRequires:    python-devel
 BuildRequires:    python-setuptools
 
@@ -126,7 +129,7 @@ This package contains documentation files for %{name}.
 %prep
 %setup -q -n swift-%{version}
 # Fix wrong-file-end-of-line-encoding warning
-sed -i 's/\r//' LICENSE
+dos2unix LICENSE
 
 %build
 %{__python} setup.py build
@@ -356,6 +359,11 @@ fi
 %doc LICENSE doc/build/html
 
 %changelog
+* Sun Aug 08 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-5
+- Update for new Python macro guidelines
+- Use dos2unix instead of sed
+- Make gecos field more descriptive
+
 * Wed Jul 28 2010 Silas Sewell <silas@sewell.ch> - 1.0.2-4
 - Rename to openstack-swift
 

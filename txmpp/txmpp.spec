@@ -1,11 +1,11 @@
 Name:             txmpp
-Version:          0.0.2
-Release:          3%{?dist}
+Version:          0.0.3
+Release:          1%{?dist}
 Summary:          A C++ XMPP library
 Group:            System Environment/Libraries
 License:          BSD
 URL:              http://www.tidg.org/txmpp
-Source0:          http://github.com/downloads/tidg/txmpp/%{name}-%{version}.tar.gz
+Source0:          http://github.com/downloads/tidg/txmpp/%{name}-%{version}.tar.bz2
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:    expat-devel >= 2.0.1
@@ -46,7 +46,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS CHANGELOG LICENSE README.md
+%doc CHANGELOG CONTRIBUTORS LICENSE README.md
 %{_libdir}/*.so.*
 
 %files devel
@@ -55,6 +55,9 @@ rm -rf %{buildroot}
 %{_libdir}/*.so
 
 %changelog
+* Fri Aug 06 2010 Silas Sewell <silas@sewell.ch> - 0.0.3-1
+- Update to 0.0.3
+
 * Sun Jul 25 2010 Silas Sewell <silas@sewell.ch> - 0.0.2-3
 - Remove expat2
 

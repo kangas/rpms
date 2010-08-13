@@ -1,6 +1,6 @@
 Name:             tyrion
 Version:          0.0.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 Summary:          A framework for systems automation
 Group:            Applications/System
 License:          BSD
@@ -37,7 +37,7 @@ The %{name}-libs package contains libraries for running %{name} applications.
 
 %package          node
 Summary:          A Tyrion node daemon
-Group:            Applications/System
+Group:            System Environment/Daemons
 
 Requires:         %{name}-libs = %{version}-%{release}
 
@@ -75,24 +75,22 @@ The %{name}-node-service-ruby package contains the node Ruby service.
 
 %build
 scons %{?_smp_mflags} --flags="%{optflags}"
-# Build man pages
-pushd doc; gzip *; popd
 
 %install
 rm -rf %{buildroot}
 scons %{?_smp_mflags} --flags="%{optflags}" --install \
-  --bindir=%{buildroot}/%{_bindir} \
-  --libdir=%{buildroot}/%{_libdir} \
-  --sbindir=%{buildroot}/%{_sbindir}
+    --bindir=%{buildroot}/%{_bindir} \
+    --libdir=%{buildroot}/%{_libdir} \
+    --sbindir=%{buildroot}/%{_sbindir}
 %{__mkdir} -p %{buildroot}%{_localstatedir}/log/%{name}-node
-%{__mkdir} -p %{buildroot}%{_datarootdir}/%{name}
-%{__cp} -rp service %{buildroot}%{_datarootdir}/%{name}
+%{__mkdir} -p %{buildroot}%{_datadir}/%{name}
+%{__cp} -rp service %{buildroot}%{_datadir}/%{name}
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}-node
-install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}-node
+install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initddir}/%{name}-node
 install -p -D -m 600 %{SOURCE3} %{buildroot}%{_sysconfdir}/%{name}/acl.conf
 install -p -D -m 600 config/node.conf %{buildroot}%{_sysconfdir}/%{name}/node.conf
-install -p -D -m 644 doc/tyrion.1.gz %{buildroot}%{_mandir}/man1/tyrion.1.gz
-install -p -D -m 644 doc/tyrion-node.8.gz %{buildroot}%{_mandir}/man8/tyrion-node.8.gz
+install -p -D -m 644 doc/tyrion.1 %{buildroot}%{_mandir}/man1/tyrion.1
+install -p -D -m 644 doc/tyrion-node.8 %{buildroot}%{_mandir}/man8/tyrion-node.8
 
 %clean
 rm -rf %{buildroot}
@@ -118,7 +116,7 @@ fi
 %defattr(-,root,root,-)
 %doc config/client.conf
 %{_bindir}/tyrion
-%{_mandir}/man1/tyrion.1.gz
+%{_mandir}/man1/tyrion.1.*
 
 %files libs
 %defattr(-,root,root,-)
@@ -132,22 +130,24 @@ fi
 %config(noreplace) %{_sysconfdir}/%{name}/node.conf
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}-node
 %dir %{_localstatedir}/log/%{name}-node
-%dir %{_datarootdir}/%{name}
-%{_datarootdir}/%{name}/service/org.tyrion.service.bash
-%{_initrddir}/%{name}-node
-%{_mandir}/man8/tyrion-node.8.gz
+%dir %{_datadir}/%{name}
+%{_datadir}/%{name}/service/org.tyrion.service.bash
+%{_initddir}/%{name}-node
+%{_mandir}/man8/tyrion-node.8.*
 %{_sbindir}/tyrion-node
 
 %files node-service-python
 %defattr(-,root,root,-)
-%doc README.md
-%{_datarootdir}/%{name}/service/org.tyrion.service.python
+%{_datadir}/%{name}/service/org.tyrion.service.python
 
 %files node-service-ruby
 %defattr(-,root,root,-)
-%doc README.md
-%{_datarootdir}/%{name}/service/org.tyrion.service.ruby
+%{_datadir}/%{name}/service/org.tyrion.service.ruby
 
 %changelog
+* Thu Aug 12 2010 Silas Sewell <silas@sewell.ch> - 0.0.1-2
+- Don't gzip man pages
+- Remove useless documentation from node-service subpackages
+
 * Thu Jul 29 2010 Silas Sewell <silas@sewell.ch> - 0.0.1-1
 - Initial build

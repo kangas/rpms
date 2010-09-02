@@ -1,0 +1,21 @@
+diff -up lxc-0.7.2/templates/lxc-debian.in.orig lxc-0.7.2/templates/lxc-debian.in
+--- lxc-0.7.2/templates/lxc-debian.in.orig	2010-08-31 23:12:46.894353374 -0400
++++ lxc-0.7.2/templates/lxc-debian.in	2010-08-31 23:28:08.018100938 -0400
+@@ -90,7 +90,7 @@ ifupdown,\
+ locales,\
+ libui-dialog-perl,\
+ dialog,\
+-dhcp-client,\
++dhcpcd,\
+ netbase,\
+ net-tools,\
+ iproute,\
+@@ -110,7 +110,7 @@ openssh-server
+     echo "Downloading debian minimal ..."
+     debootstrap --verbose --variant=minbase --arch=$arch \
+ 	--include $packages \
+-	lenny $cache/partial-$arch http://ftp.debian.org/debian
++	squeeze $cache/partial-$arch http://ftp.debian.org/debian
+     if [ $? -ne 0 ]; then
+ 	echo "Failed to download the rootfs, aborting."
+ 	return 1

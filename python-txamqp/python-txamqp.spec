@@ -6,7 +6,7 @@
 
 Name:           python-%{upstream_name}
 Version:        0.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A Python library for communicating with AMQP peers and brokers using Twisted
 
 Group:          Development/Languages
@@ -19,7 +19,6 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
-Requires:       amqp
 Requires:       python-twisted-core
 
 %description
@@ -58,14 +57,19 @@ rm -rf %{buildroot}
 %if !%{with_thrift}
 rm -rf %{buildroot}%{python_sitelib}/%{upstream_name}/contrib/thrift
 %endif
+# Some versions of amqp0-8.xml shipping in the amqp package were causing
+# errors, so shipping this as well.
+install -p -D -m 644 src/specs/standard/amqp0-8.xml %{buildroot}%{_datarootdir}/%{name}/amqp0-8.xml
+install -p -D -m 644 src/specs/standard/amqp0-9.xml %{buildroot}%{_datarootdir}/%{name}/amqp0-9.xml
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-# Request LICENSE in https://bugs.launchpad.net/txamqp/+bug/605699
+# Request LICENSE in https://bugs.launchpad.net/txamqp/+bug/605699 (nextrelease)
 %doc doc/CHANGES doc/README doc/THANKS src/examples/simple
+%{_datarootdir}/%{name}
 %dir %{python_sitelib}/%{upstream_name}
 %{python_sitelib}/%{upstream_name}/*.py*
 %{python_sitelib}/%{upstream_name}/test
@@ -81,5 +85,9 @@ rm -rf %{buildroot}
 %endif
 
 %changelog
+* Wed Sep 01 2010 Silas Sewell <silas@sewell.ch> - 0.3-2
+- Add standard specs
+- Removed amqp package requirement
+
 * Wed Jul 14 2010 Silas Sewell <silas@sewell.ch> - 0.3-1
 - Initial build

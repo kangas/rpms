@@ -1,12 +1,13 @@
 Name:           lxc
 Version:        0.7.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Linux Resource Containers
 
 Group:          Applications/System
 License:        LGPLv2+
 URL:            http://lxc.sourceforge.net
 Source0:        http://lxc.sourceforge.net/download/lxc/%{name}-%{version}.tar.gz
+Patch0:         lxc-0.7.2-fix-debian-template.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  automake
@@ -29,6 +30,18 @@ Linux Resource Containers provide process and resource isolation without the
 overhead of full virtualization.
 
 The %{name}-libs package contains libraries for running %{name} applications.
+
+%package        templates
+Summary:        Templates for %{name}
+Group:          System Environment/Libraries
+Requires:       %{name} = %{version}-%{release}
+Requires:       debootstrap
+
+%description    templates
+Linux Resource Containers provide process and resource isolation without the
+overhead of full virtualization.
+
+The %{name}-template package contains templates for creating containers.
 
 %package        devel
 Summary:        Development files for %{name}
@@ -69,8 +82,6 @@ rm -rf %{buildroot}
 %{__make} DESTDIR=%{buildroot} install
 find %{buildroot} -name '*.la' -delete
 %{__mkdir} -p %{buildroot}%{_sharedstatedir}/%{name}
-# Remove templates
-rm -f %{buildroot}%{_libdir}/lxc/templates/lxc-*
 
 %clean
 rm -rf %{buildroot}
@@ -81,20 +92,25 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING README
+%doc README
 %{_bindir}/%{name}-*
 %{_mandir}/man*/%{name}*
 %{_sharedstatedir}/%{name}
 
 %files libs
 %defattr(-,root,root,-)
-%doc COPYING
+%doc AUTHORS COPYING
+%dir %{_libdir}/lxc
 %{_libdir}/liblxc.so.*
-%{_libdir}/lxc
+%{_libdir}/lxc/lxc-init
+%{_libdir}/lxc/rootfs
+
+%files templates
+%defattr(-,root,root,-)
+%{_libdir}/lxc/templates
 
 %files devel
 %defattr(-,root,root,-)
-%doc COPYING
 %{_datadir}/pkgconfig/%{name}.pc
 %{_includedir}/*
 %{_libdir}/liblxc.so
@@ -104,6 +120,9 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}
 
 %changelog
+* Tue Aug 31 2010 Silas Sewell <silas@sewell.ch> - 0.7.2-2
+- Add templates back with patches
+
 * Mon Jul 26 2010 Silas Sewell <silas@sewell.ch> - 0.7.2-1
 - Update to 0.7.2
 - Remove templates

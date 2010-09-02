@@ -1,6 +1,6 @@
 Name:             redis
 Version:          1.2.6
-Release:          2%{?dist}
+Release:          3%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
@@ -13,6 +13,7 @@ Source10:         %{name}-benchmark.1
 Source11:         %{name}-cli.1
 Source12:         %{name}-server.8
 Source13:         %{name}-stat.1
+# Update configuration for Fedora
 Patch0:           %{name}-1.2.6.conf.patch
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -34,9 +35,11 @@ different kind of sorting abilities.
 %prep
 %setup -q
 %patch0 -p1
+# Remove debug flags
+sed -i '/^DEBUG/d' Makefile
 
 %build
-%{__make} %{?_smp_mflags}
+make %{?_smp_mflags} CFLAGS='%{optflags} -std=c99'
 
 %install
 rm -fr %{buildroot}
@@ -65,21 +68,21 @@ rm -fr %{buildroot}
 /sbin/chkconfig --add redis
 
 %pre
-getent group redis >/dev/null || groupadd -r redis
-getent passwd redis >/dev/null || \
+getent group redis &> /dev/null || groupadd -r redis &> /dev/null
+getent passwd redis &> /dev/null || \
 useradd -r -g redis -d %{_sharedstatedir}/redis -s /sbin/nologin \
--c 'Redis Server' redis
+-c 'Redis Server' redis &> /dev/null
 exit 0
 
 %preun
 if [ $1 = 0 ]; then
   /sbin/service redis stop &> /dev/null
-  /sbin/chkconfig --del redis
+  /sbin/chkconfig --del redis &> /dev/null
 fi
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING README doc/
+%doc 00-RELEASENOTES BUGS COPYING Changelog TODO doc/
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %dir %attr(0755, redis, root) %{_localstatedir}/lib/%{name}
@@ -92,6 +95,12 @@ fi
 %{_sbindir}/%{name}-*
 
 %changelog
+* Thu Sep 02 2010 Silas Sewell <silas@sewell.ch> - 1.2.6-3
+- Add Fedora build flags
+- Send all scriplet output to /dev/null
+- Remove debugging flags
+- Add redis.conf check to init script
+
 * Mon Aug 16 2010 Silas Sewell <silas@sewell.ch> - 1.2.6-2
 - Don't compress man pages
 - Use patch to fix redis.conf

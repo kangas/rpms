@@ -18,6 +18,7 @@ REDIS_CONFIG="/etc/redis.conf"
 lockfile=/var/lock/subsys/redis
 
 start() {
+    [ -f $REDIS_CONFIG ] || exit 6
     [ -x $exec ] || exit 5
     echo -n $"Starting $name: "
     daemon --user ${REDIS_USER-redis} "$exec $REDIS_CONFIG"

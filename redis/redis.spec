@@ -1,6 +1,9 @@
+# Check for status of man pages
+# http://code.google.com/p/redis/issues/detail?id=202
+
 Name:             redis
-Version:          1.2.6
-Release:          3%{?dist}
+Version:          2.0.0
+Release:          1%{?dist}
 Summary:          A persistent key-value database
 
 Group:            Applications/Databases
@@ -9,13 +12,11 @@ URL:              http://code.google.com/p/redis/
 Source0:          http://redis.googlecode.com/files/%{name}-%{version}.tar.gz
 Source1:          %{name}.logrotate
 Source2:          %{name}.init
-Source10:         %{name}-benchmark.1
-Source11:         %{name}-cli.1
-Source12:         %{name}-server.8
-Source13:         %{name}-stat.1
 # Update configuration for Fedora
-Patch0:           %{name}-1.2.6.conf.patch
+Patch0:           %{name}-2.0.0-redis.conf.patch
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+BuildRequires:    tcl
 
 Requires:         logrotate
 Requires(post):   chkconfig
@@ -35,24 +36,24 @@ different kind of sorting abilities.
 %prep
 %setup -q
 %patch0 -p1
-# Remove debug flags
-sed -i '/^DEBUG/d' Makefile
+# Remove integration tests
+sed -i '/    execute_tests "integration\/replication"/d' tests/test_helper.tcl
+sed -i '/    execute_tests "integration\/aof"/d' tests/test_helper.tcl
 
 %build
-make %{?_smp_mflags} CFLAGS='%{optflags} -std=c99'
+make %{?_smp_mflags} DEBUG="" CFLAGS='%{optflags} -std=c99' all
+
+%check
+tclsh tests/test_helper.tcl
 
 %install
 rm -fr %{buildroot}
 # Install binaries
 install -p -D -m 755 %{name}-benchmark %{buildroot}%{_bindir}/%{name}-benchmark
 install -p -D -m 755 %{name}-cli %{buildroot}%{_bindir}/%{name}-cli
-install -p -D -m 755 %{name}-stat %{buildroot}%{_bindir}/%{name}-stat
+install -p -D -m 755 %{name}-check-aof %{buildroot}%{_bindir}/%{name}-check-aof
+install -p -D -m 755 %{name}-check-dump %{buildroot}%{_bindir}/%{name}-check-dump
 install -p -D -m 755 %{name}-server %{buildroot}%{_sbindir}/%{name}-server
-# Install man pages
-install -p -D -m 644 %{SOURCE10} %{buildroot}%{_mandir}/man1/%{name}-benchmark.1
-install -p -D -m 644 %{SOURCE11} %{buildroot}%{_mandir}/man1/%{name}-cli.1
-install -p -D -m 644 %{SOURCE12} %{buildroot}%{_mandir}/man8/%{name}-server.8
-install -p -D -m 644 %{SOURCE13} %{buildroot}%{_mandir}/man1/%{name}-stat.1
 # Install misc other
 install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}
@@ -82,19 +83,20 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc 00-RELEASENOTES BUGS COPYING Changelog TODO doc/
+%doc 00-RELEASENOTES BUGS COPYING Changelog README TODO doc/
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %config(noreplace) %{_sysconfdir}/%{name}.conf
 %dir %attr(0755, redis, root) %{_localstatedir}/lib/%{name}
 %dir %attr(0755, redis, root) %{_localstatedir}/log/%{name}
 %dir %attr(0755, redis, root) %{_localstatedir}/run/%{name}
 %{_bindir}/%{name}-*
-%{_initrddir}/%{name}
-%{_mandir}/man1/%{name}*.1*
-%{_mandir}/man8/%{name}*.8*
 %{_sbindir}/%{name}-*
+%{_initrddir}/%{name}
 
 %changelog
+* Sat Sep 04 2010 Silas Sewell <silas@sewell.ch> - 2.0.0-1
+- Update to redis 2.0.0
+
 * Thu Sep 02 2010 Silas Sewell <silas@sewell.ch> - 1.2.6-3
 - Add Fedora build flags
 - Send all scriplet output to /dev/null

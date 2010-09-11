@@ -2,7 +2,7 @@
 # http://code.google.com/p/redis/issues/detail?id=202
 
 Name:             redis
-Version:          2.0.0
+Version:          2.0.1
 Release:          1%{?dist}
 Summary:          A persistent key-value database
 
@@ -94,6 +94,9 @@ fi
 %{_initrddir}/%{name}
 
 %changelog
+* Fri Sep 11 2010 Silas Sewell <silas@sewell.ch> - 2.0.1-1
+- Update to redis 2.0.1
+
 * Sat Sep 04 2010 Silas Sewell <silas@sewell.ch> - 2.0.0-1
 - Update to redis 2.0.0
 

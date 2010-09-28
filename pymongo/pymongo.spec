@@ -17,9 +17,7 @@ Source0:        http://pypi.python.org/packages/source/p/pymongo/%{name}-%{versi
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  python-devel
-BuildRequires:  python-nose
 BuildRequires:  python-setuptools
-BuildRequires:  python-sphinx
 
 %description
 The Python driver for MongoDB.
@@ -49,7 +47,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE PKG-INFO README.rst
+%doc LICENSE PKG-INFO README.rst doc
 %{python_sitearch}/%{name}
 %{python_sitearch}/%{name}-%{version}-*.egg-info
 

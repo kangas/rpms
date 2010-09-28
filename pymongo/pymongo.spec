@@ -36,7 +36,9 @@ Summary:        Python bson library
 Group:          Development/Libraries
 
 %description -n python-bson
-GridFS is a storage specification for large objects in MongoDB.
+BSON is a binary-encoded serialization of JSON-like documents. BSON is designed
+to be lightweight, traversable, and efficient. BSON, like JSON, supports the
+embedding of objects and arrays within other objects and arrays.
 
 %prep
 %setup -q

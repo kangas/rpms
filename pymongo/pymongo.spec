@@ -6,7 +6,7 @@
 %global __find_requires %{_rpmconfigdir}/find-requires | grep -v cvisualmodule
 
 Name:           pymongo
-Version:        1.8.1
+Version:        1.9
 Release:        1%{?dist}
 Summary:        Python driver for MongoDB
 
@@ -15,6 +15,7 @@ License:        ASL 2.0
 URL:            http://api.mongodb.org/python
 Source0:        http://pypi.python.org/packages/source/p/pymongo/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Requires:       python-bson = %{version}-%{release}
 
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
@@ -30,6 +31,13 @@ Requires:       %{name} = %{version}-%{release}
 %description gridfs
 GridFS is a storage specification for large objects in MongoDB.
 
+%package -n python-bson
+Summary:        Python bson library
+Group:          Development/Libraries
+
+%description -n python-bson
+GridFS is a storage specification for large objects in MongoDB.
+
 %prep
 %setup -q
 
@@ -40,7 +48,8 @@ CFLAGS="%{optflags}" %{__python} setup.py build
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 # Fix non-standard-executable-perm error
-chmod 755 %{buildroot}%{python_sitearch}/%{name}/_cbson.so
+chmod 755 %{buildroot}%{python_sitearch}/%{name}/_cmessage.so
+chmod 755 %{buildroot}%{python_sitearch}/bson/_cbson.so
 
 %clean
 rm -rf %{buildroot}
@@ -55,7 +64,14 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{python_sitearch}/gridfs
 
+%files -n python-bson
+%defattr(-,root,root,-)
+%{python_sitearch}/bson
+
 %changelog
+* Tue Sep 28 2010 Silas Sewell <silas@sewell.ch> - 1.9-1
+- Update to 1.9
+
 * Tue Sep 28 2010 Silas Sewell <silas@sewell.ch> - 1.8.1-1
 - Update to 1.8.1
 

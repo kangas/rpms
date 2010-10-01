@@ -1,8 +1,8 @@
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
 
 Name:           python-stomper
-Version:        0.2.2
-Release:        8%{?dist}
+Version:        0.2.3
+Release:        1%{?dist}
 Summary:        A Python client implementation of the STOMP protocol
 
 Group:          Development/Languages
@@ -43,6 +43,9 @@ rm -rf %{buildroot}
 %{python_sitelib}/stomper-%{version}-*.egg-info
 
 %changelog
+* Sat Sep 11 2010 Silas Sewell <silas@sewell.ch> - 0.2.3-1
+- Update to 0.2.3
+
 * Sun Apr 12 2009 Silas Sewell <silas@sewell.ch> - 0.2.2-8
 - Normalize spec
 

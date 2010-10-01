@@ -1,0 +1,28 @@
+diff -up cyclone-0.4/cyclone/httpclient.py.orig cyclone-0.4/cyclone/httpclient.py
+--- cyclone-0.4/cyclone/httpclient.py.orig	2010-09-25 00:39:27.498103063 -0400
++++ cyclone-0.4/cyclone/httpclient.py	2010-09-25 00:40:12.033874537 -0400
+@@ -21,9 +21,9 @@ from twisted.internet.defer import Defer
+ from twisted.internet.protocol import Protocol
+ from zope.interface import implements
+ from twisted.internet.defer import succeed
+-from cyclone.tw.client import Agent
+-from cyclone.tw.http_headers import Headers
+-from cyclone.tw.iweb import IBodyProducer
++from twisted.web.client import Agent
++from twisted.web.http_headers import Headers
++from twisted.web.iweb import IBodyProducer
+ from cyclone.web import _utf8
+ 
+ agent = Agent(reactor)
+diff -up cyclone-0.4/setup.py.orig cyclone-0.4/setup.py
+--- cyclone-0.4/setup.py.orig	2010-09-25 00:37:03.228853354 -0400
++++ cyclone-0.4/setup.py	2010-09-25 00:37:10.740032483 -0400
+@@ -20,7 +20,7 @@ import setuptools
+ setuptools.setup(
+     name="cyclone",
+     version="0.4",
+-    packages=["cyclone", "cyclone.tw", "cyclone.redis"],
++    packages=["cyclone", "cyclone.redis"],
+ #    install_requires=["twisted"],
+     author="fiorix",
+     author_email="fiorix@gmail.com",

@@ -2,7 +2,7 @@
 # http://code.google.com/p/redis/issues/detail?id=202
 
 Name:             redis
-Version:          2.0.1
+Version:          2.0.2
 Release:          1%{?dist}
 Summary:          A persistent key-value database
 
@@ -16,7 +16,9 @@ Source2:          %{name}.init
 Patch0:           %{name}-2.0.0-redis.conf.patch
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
-BuildRequires:    tcl
+%if !0%{?el5}
+BuildRequires:    tcl >= 8.5
+%endif
 
 Requires:         logrotate
 Requires(post):   chkconfig
@@ -44,7 +46,9 @@ sed -i '/    execute_tests "integration\/aof"/d' tests/test_helper.tcl
 make %{?_smp_mflags} DEBUG="" CFLAGS='%{optflags} -std=c99' all
 
 %check
+%if !0%{?el5}
 tclsh tests/test_helper.tcl
+%endif
 
 %install
 rm -fr %{buildroot}
@@ -94,6 +98,10 @@ fi
 %{_initrddir}/%{name}
 
 %changelog
+* Fri Oct 08 2010 Silas Sewell <silas@sewell.ch> - 2.0.2-1
+- Update to redis 2.0.2
+- Disable checks section for el5
+
 * Fri Sep 11 2010 Silas Sewell <silas@sewell.ch> - 2.0.1-1
 - Update to redis 2.0.1
 

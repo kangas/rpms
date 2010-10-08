@@ -30,7 +30,7 @@ by Facebook.
 %prep
 %setup -q -n %{upstream_name}-%{version}
 %patch0 -p1
-sed -i '/#!\/usr\/bin\/env python/g' %{upstream_name}/*.py
+sed -i '/#!\/usr\/bin\/env python/d' %{upstream_name}/*.py
 
 %build
 %{__python} setup.py build

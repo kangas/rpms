@@ -3,7 +3,7 @@
 %global package_name Fabric
 
 Name:           fabric
-Version:        0.9.1
+Version:        0.9.2
 Release:        1%{?dist}
 Summary:        A simple Pythonic remote deployment tool
 
@@ -12,7 +12,10 @@ License:        BSD
 URL:            http://www.fabfile.org
 Source0:        http://code.fabfile.org/projects/fabric/files/%{package_name}-%{version}.tar.gz
 # Upstream issue to add man page http://code.fabfile.org/issues/show/35
+# wget http://github.com/adamv/fabric/raw/a7027fd810344c455ada6c31435dbb0905ad4e55/man/fab.1
 Source1:        fab.1
+# Fix in http://github.com/adamv/fabric/commit/4630d896ffc56696ba7083ff0d458b63928ad9e8
+Patch0:         Fabric-%{version}.fix-setup-py.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch
@@ -28,16 +31,16 @@ serially.
 
 %prep
 %setup -q -n %{package_name}-%{version}
+%patch0 -p1
 
 %build
 %{__python} setup.py build
-%{__gzip} %{SOURCE1}
 
 %install
 %{__rm} -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 %{__rm} -fr %{buildroot}%{python_sitelib}/paramiko
-%{__install} -p -m 0644 -D %{SOURCE1}.gz %{buildroot}%{_mandir}/man1/fab.1.gz
+%{__install} -p -m 0644 -D %{SOURCE1} %{buildroot}%{_mandir}/man1/fab.1
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -51,6 +54,11 @@ serially.
 %{_mandir}/man1/fab.1.gz
 
 %changelog
+* Sat Oct 09 2010 Silas Sewell <silas@sewell.ch> - 0.9.2-1
+- Update to 0.9.2
+- Import man page from upstream branch
+- Apply upstream patch to fix incorrect requirements
+
 * Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 0.9.1-1
 - Update to 0.9.1
 - Add man page

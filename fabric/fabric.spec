@@ -59,6 +59,9 @@ serially.
 - Import man page from upstream branch
 - Apply upstream patch to fix incorrect requirements
 
+* Wed Jul 21 2010 David Malcolm <dmalcolm@redhat.com> - 0.9.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Features/Python_2.7/MassRebuild
+
 * Tue Jul 06 2010 Silas Sewell <silas@sewell.ch> - 0.9.1-1
 - Update to 0.9.1
 - Add man page

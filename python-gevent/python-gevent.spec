@@ -7,7 +7,7 @@
 %global upstream_name gevent
 
 Name:           python-%{upstream_name}
-Version:        0.13.0
+Version:        0.13.1
 Release:        1%{?dist}
 Summary:        A coroutine-based Python networking library
 
@@ -56,6 +56,12 @@ rm -rf %{buildroot}
 %{python_sitearch}/%{upstream_name}-%{version}-*.egg-info
 
 %changelog
+* Sat Oct 09 2010 Silas Sewell <silas@sewell.ch> - 0.13.1-1
+- Update to 0.13.1
+
+* Tue Jul 27 2010 David Malcolm <dmalcolm@redhat.com> - 0.13.0-2
+- Rebuilt for https://fedoraproject.org/wiki/Features/Python_2.7/MassRebuild
+
 * Wed Jul 14 2010 Silas Sewell <silas@sewell.ch> - 0.13.0-1
 - Update to 0.13.0
 

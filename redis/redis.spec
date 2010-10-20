@@ -2,7 +2,7 @@
 # http://code.google.com/p/redis/issues/detail?id=202
 
 Name:             redis
-Version:          2.0.2
+Version:          2.0.3
 Release:          1%{?dist}
 Summary:          A persistent key-value database
 
@@ -98,6 +98,9 @@ fi
 %{_initrddir}/%{name}
 
 %changelog
+* Tue Oct 19 2010 Silas Sewell <silas@sewell.ch> - 2.0.3-1
+- Update to redis 2.0.3
+
 * Fri Oct 08 2010 Silas Sewell <silas@sewell.ch> - 2.0.2-1
 - Update to redis 2.0.2
 - Disable checks section for el5

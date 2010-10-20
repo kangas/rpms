@@ -100,7 +100,7 @@ CFLAGS="%{optflags}" %{__python} setup.py build
 
 %if 0%{?with_python3}
 pushd %{py3dir}
-%{__python3} setup.py build
+CFLAGS="%{optflags}" %{__python3} setup.py build
 popd
 %endif # with_python3
 

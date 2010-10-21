@@ -8,7 +8,7 @@ Release:        1%{?dist}
 Summary:        Mock object framework
 
 Group:          Development/Languages
-License:        BSD
+License:        ASL 2.0
 URL:            http://pypi.python.org/pypi/mox
 Source0:        http://pypi.python.org/packages/source/m/mox/mox-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)

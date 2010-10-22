@@ -1,9 +1,0 @@
-diff -up nova-0.9.1.r292/setup.py.orig nova-0.9.1.r292/setup.py
---- nova-0.9.1.r292/setup.py.orig	2010-09-25 15:38:38.835392149 -0400
-+++ nova-0.9.1.r292/setup.py	2010-09-25 15:38:42.987268084 -0400
-@@ -54,5 +54,4 @@ setup(name='nova',
-                'bin/nova-manage',
-                'bin/nova-network',
-                'bin/nova-objectstore',
--               'bin/nova-api-new',
-                'bin/nova-volume'])

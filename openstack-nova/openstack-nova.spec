@@ -29,6 +29,20 @@ uses an LDAP server for users and groups, but also includes a fake LDAP server,
 that stores data in Redis. It has extensive test coverage, and uses the Sphinx
 toolkit (the same as Python itself) for code and user documentation.
 
+%package          api
+Summary:          A nova api server
+Group:            Applications/System
+
+Requires:         %{name} = %{version}-%{release}
+
+%description      api
+Nova is a cloud computing fabric controller (the main part of an IaaS system)
+built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
+the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
+protocol, and the Redis KVS.
+
+This package contains the %{name} api server.
+
 %package          compute
 Summary:          A nova compute server
 Group:            Applications/System
@@ -43,47 +57,19 @@ protocol, and the Redis KVS.
 
 This package contains the %{name} compute server.
 
-%package          scheduler
-Summary:          A nova scheduler server
+%package          instancemonitor
+Summary:          A nova instancemonitor server
 Group:            Applications/System
 
 Requires:         %{name} = %{version}-%{release}
 
-%description      scheduler
+%description      instancemonitor
 Nova is a cloud computing fabric controller (the main part of an IaaS system)
 built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
 the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
 protocol, and the Redis KVS.
 
-This package contains the %{name} scheduler server.
-
-%package          volume
-Summary:          A nova volume server
-Group:            Applications/System
-
-Requires:         %{name} = %{version}-%{release}
-
-%description      volume
-Nova is a cloud computing fabric controller (the main part of an IaaS system)
-built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
-the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
-protocol, and the Redis KVS.
-
-This package contains the %{name} volume server.
-
-%package          api
-Summary:          A nova api server
-Group:            Applications/System
-
-Requires:         %{name} = %{version}-%{release}
-
-%description      api
-Nova is a cloud computing fabric controller (the main part of an IaaS system)
-built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
-the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
-protocol, and the Redis KVS.
-
-This package contains the %{name} api server.
+This package contains the %{name} instance monitor.
 
 %package          network
 Summary:          A nova network server
@@ -113,19 +99,47 @@ protocol, and the Redis KVS.
 
 This package contains the %{name} object store server.
 
-%package          instancemonitor
-Summary:          A nova instancemonitor server
+%package          scheduler
+Summary:          A nova scheduler server
 Group:            Applications/System
 
 Requires:         %{name} = %{version}-%{release}
 
-%description      instancemonitor
+%description      scheduler
 Nova is a cloud computing fabric controller (the main part of an IaaS system)
 built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
 the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
 protocol, and the Redis KVS.
 
-This package contains the %{name} instance monitor.
+This package contains the %{name} scheduler server.
+
+%package          tests
+Summary:          A nova test suite
+Group:            Development/Languages
+
+Requires:         %{name} = %{version}-%{release}
+
+%description      tests
+Nova is a cloud computing fabric controller (the main part of an IaaS system)
+built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
+the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
+protocol, and the Redis KVS.
+
+This package contains the %{name} test suite.
+
+%package          volume
+Summary:          A nova volume server
+Group:            Applications/System
+
+Requires:         %{name} = %{version}-%{release}
+
+%description      volume
+Nova is a cloud computing fabric controller (the main part of an IaaS system)
+built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
+the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
+protocol, and the Redis KVS.
+
+This package contains the %{name} volume server.
 
 %prep
 %setup -q -n nova-%{version}
@@ -140,12 +154,12 @@ rm -rf %{buildroot}
 # Setup directories
 install -d -m 755 %{buildroot}%{_sysconfdir}/nova
 install -d -m 755 %{buildroot}%{_sharedstatedir}/nova
-install -d -m 755 %{_sharedstatedir}/nova/images
-install -d -m 755 %{_sharedstatedir}/nova/instances
-install -d -m 755 %{_sharedstatedir}/nova/keys
-install -d -m 755 %{_sharedstatedir}/nova/networks
-install -d -m 755 %{_sharedstatedir}/nova/tmp
-install -d -m 755 %{_localstatedir}/log/nova
+install -d -m 755 %{buildroot}%{_sharedstatedir}/nova/images
+install -d -m 755 %{buildroot}%{_sharedstatedir}/nova/instances
+install -d -m 755 %{buildroot}%{_sharedstatedir}/nova/keys
+install -d -m 755 %{buildroot}%{_sharedstatedir}/nova/networks
+install -d -m 755 %{buildroot}%{_sharedstatedir}/nova/tmp
+install -d -m 755 %{buildroot}%{_localstatedir}/log/nova
 cp -rp CA %{buildroot}%{_sharedstatedir}/nova
 
 # Setup configuration files
@@ -158,8 +172,7 @@ install -p -D -m 644 nova/virt/interfaces.template %{buildroot}%{_datarootdir}/n
 # TODO debian/nova_sudoers
 
 # Clean CA directory
-find %{_sharedstatedir}/swift/CA -name .gitignore -delete
-find %{_sharedstatedir}/swift/CA -name .placeholder -delete
+find %{_sharedstatedir}/swift/CA -name .gitignore -or -name .placeholder -delete
 
 %clean
 rm -rf %{buildroot}

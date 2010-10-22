@@ -15,17 +15,17 @@
 
 Name:           pymongo
 Version:        1.9
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Python driver for MongoDB
 
 Group:          Development/Languages
-License:        ASL 2.0
+License:        ASL 2.0 and MIT
 URL:            http://api.mongodb.org/python
 Source0:        http://pypi.python.org/packages/source/p/pymongo/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Requires:       python-bson = %{version}-%{release}
 
-BuildRequires:  python-devel
+BuildRequires:  python2-devel
 BuildRequires:  python-nose
 BuildRequires:  python-setuptools
 
@@ -160,24 +160,30 @@ rm -rf %{buildroot}
 %endif # with_python3
 
 %check
-exclude='(^test$'
-exclude+='|test_collection'
-exclude+='|test_connection'
-exclude+='|test_cursor'
-exclude+='|test_database'
-exclude+='|test_grid_file'
-exclude+='|test_gridfs'
-exclude+='|test_master_slave_connection'
-exclude+='|test_paired'
-exclude+='|test_pooling'
-exclude+='|test_pymongo'
-exclude+='|test_son_manipulator'
-exclude+='|test_threads'
+ exclude='(^test_collection$'
+exclude+='|^test_connection$'
+exclude+='|^test_cursor$'
+exclude+='|^test_database$'
+exclude+='|^test_grid_file$'
+exclude+='|^test_gridfs$'
+exclude+='|^test_master_slave_connection$'
+exclude+='|^test_paired$'
+exclude+='|^test_pooling$'
+exclude+='|^test_pymongo$'
+exclude+='|^test_son_manipulator$'
+exclude+='|^test_threads$'
 exclude+=')'
 # Exclude tests that require an active MongoDB connection
+pushd test
+truncate --size=0 __init__.py
 nosetests --exclude="$exclude"
+popd
 
 %changelog
+* Thu Oct 21 2010 Silas Sewell <silas@sewell.ch> - 1.9-3
+- Fixed tests so they actually run
+- Change python-devel to python2-devel
+
 * Wed Oct 20 2010 Silas Sewell <silas@sewell.ch> - 1.9-2
 - Add check section
 - Use correct .so filter

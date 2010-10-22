@@ -268,14 +268,14 @@ fi
 %{_bindir}/swift-ring-builder
 %{_bindir}/swift-stats-populate
 %{_bindir}/swift-stats-report
-%{_mandir}/man8/st.8.gz
-%{_mandir}/man8/swift-account-audit.8.gz
-%{_mandir}/man8/swift-drive-audit.8.gz
-%{_mandir}/man8/swift-get-nodes.8.gz
-%{_mandir}/man8/swift-init.8.gz
-%{_mandir}/man8/swift-ring-builder.8.gz
-%{_mandir}/man8/swift-stats-populate.8.gz
-%{_mandir}/man8/swift-stats-report.8.gz
+%{_mandir}/man8/st.8.*
+%{_mandir}/man8/swift-account-audit.8.*
+%{_mandir}/man8/swift-drive-audit.8.*
+%{_mandir}/man8/swift-get-nodes.8.*
+%{_mandir}/man8/swift-init.8.*
+%{_mandir}/man8/swift-ring-builder.8.*
+%{_mandir}/man8/swift-stats-populate.8.*
+%{_mandir}/man8/swift-stats-report.8.*
 %{python_sitelib}/swift/*.py*
 %{python_sitelib}/swift/common
 %{python_sitelib}/swift-%{version}-*.egg-info
@@ -290,10 +290,10 @@ fi
 %{_bindir}/swift-account-reaper
 %{_bindir}/swift-account-replicator
 %{_bindir}/swift-account-server
-%{_mandir}/man8/swift-account-auditor.8.gz
-%{_mandir}/man8/swift-account-reaper.8.gz
-%{_mandir}/man8/swift-account-replicator.8.gz
-%{_mandir}/man8/swift-account-server.8.gz
+%{_mandir}/man8/swift-account-auditor.8.*
+%{_mandir}/man8/swift-account-reaper.8.*
+%{_mandir}/man8/swift-account-replicator.8.*
+%{_mandir}/man8/swift-account-server.8.*
 %{python_sitelib}/swift/account
 
 %files auth
@@ -305,9 +305,9 @@ fi
 %{_bindir}/swift-auth-create-account
 %{_bindir}/swift-auth-recreate-accounts
 %{_bindir}/swift-auth-server
-%{_mandir}/man8/swift-auth-create-account.8.gz
-%{_mandir}/man8/swift-auth-recreate-accounts.8.gz
-%{_mandir}/man8/swift-auth-server.8.gz
+%{_mandir}/man8/swift-auth-create-account.8.*
+%{_mandir}/man8/swift-auth-recreate-accounts.8.*
+%{_mandir}/man8/swift-auth-server.8.*
 %{python_sitelib}/swift/auth
 
 %files container
@@ -320,10 +320,10 @@ fi
 %{_bindir}/swift-container-server
 %{_bindir}/swift-container-replicator
 %{_bindir}/swift-container-updater
-%{_mandir}/man8/swift-container-auditor.8.gz
-%{_mandir}/man8/swift-container-server.8.gz
-%{_mandir}/man8/swift-container-replicator.8.gz
-%{_mandir}/man8/swift-container-updater.8.gz
+%{_mandir}/man8/swift-container-auditor.8.*
+%{_mandir}/man8/swift-container-server.8.*
+%{_mandir}/man8/swift-container-replicator.8.*
+%{_mandir}/man8/swift-container-updater.8.*
 %{python_sitelib}/swift/container
 
 %files object
@@ -337,11 +337,11 @@ fi
 %{_bindir}/swift-object-replicator
 %{_bindir}/swift-object-server
 %{_bindir}/swift-object-updater
-%{_mandir}/man8/swift-object-auditor.8.gz
-%{_mandir}/man8/swift-object-info.8.gz
-%{_mandir}/man8/swift-object-replicator.8.gz
-%{_mandir}/man8/swift-object-server.8.gz
-%{_mandir}/man8/swift-object-updater.8.gz
+%{_mandir}/man8/swift-object-auditor.8.*
+%{_mandir}/man8/swift-object-info.8.*
+%{_mandir}/man8/swift-object-replicator.8.*
+%{_mandir}/man8/swift-object-server.8.*
+%{_mandir}/man8/swift-object-updater.8.*
 %{python_sitelib}/swift/obj
 
 %files proxy
@@ -351,7 +351,7 @@ fi
 %dir %attr(0755, swift, root) %{_localstatedir}/run/swift/proxy-server
 %dir %{_sysconfdir}/swift/proxy-server
 %{_bindir}/swift-proxy-server
-%{_mandir}/man8/swift-proxy-server.8.gz
+%{_mandir}/man8/swift-proxy-server.8.*
 %{python_sitelib}/swift/proxy
 
 %files doc

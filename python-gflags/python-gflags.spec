@@ -4,7 +4,7 @@
 
 Name:           python-%{upstream_name}
 Version:        1.4
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Commandline flags module for Python
 
 Group:          Development/Languages
@@ -32,6 +32,8 @@ difference from OptParse.)
 
 %prep
 %setup -q
+# Fix non-executable-script error
+sed -i '/^#!\/usr\/bin\/env python$/,+1 d' %{upstream_name}.py
 
 %build
 %{__python} setup.py build
@@ -54,5 +56,8 @@ rm -rf %{buildroot}
 %{_bindir}/gflags2man
 
 %changelog
+* Tue Oct 26 2010 Silas Sewell <silas@sewell.ch> - 1.4-2
+- Fix non-executable-script error
+
 * Wed Oct 13 2010 Silas Sewell <silas@sewell.ch> - 1.4-1
 - Initial package

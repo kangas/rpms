@@ -11,12 +11,33 @@ Group:            Development/Languages
 License:          ASL 2.0
 URL:              http://launchpad.net/nova
 Source0:          http://launchpad.net/nova/austin/%{version}/+download/nova-%{version}.tar.gz
+#Source1:          %{name}-functions
+Source2:          nova-api.conf
+Source3:          %{name}-api.init
+Source4:          nova-compute.conf
+Source5:          %{name}-compute.init
+Source6:          nova-dhcpbridge.conf
+Source7:          %{name}.logrotate
+Source8:          nova-manage.conf
+Source10:         nova-network.conf
+Source11:         %{name}-network.init
+Source12:         nova-objectstore.conf
+Source13:         %{name}-objectstore.init
+Source14:         nova-scheduler.conf
+Source15:         %{name}-scheduler.init
+Source16:         nova-volume.conf
+Source17:         %{name}-volume.init
 BuildRoot:        %{_tmppath}/nova-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:        noarch
 BuildRequires:    dos2unix
 BuildRequires:    python-devel
 BuildRequires:    python-setuptools
+
+Requires(post):   chkconfig
+Requires(postun): initscripts
+Requires(preun):  chkconfig
+Requires(pre):    shadow-utils
 
 %description
 Nova is a cloud computing fabric controller (the main part of an IaaS system)
@@ -113,20 +134,6 @@ protocol, and the Redis KVS.
 
 This package contains the %{name} scheduler server.
 
-%package          tests
-Summary:          A nova test suite
-Group:            Development/Languages
-
-Requires:         %{name} = %{version}-%{release}
-
-%description      tests
-Nova is a cloud computing fabric controller (the main part of an IaaS system)
-built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
-the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
-protocol, and the Redis KVS.
-
-This package contains the %{name} test suite.
-
 %package          volume
 Summary:          A nova volume server
 Group:            Applications/System
@@ -162,7 +169,28 @@ install -d -m 755 %{buildroot}%{_sharedstatedir}/nova/tmp
 install -d -m 755 %{buildroot}%{_localstatedir}/log/nova
 cp -rp CA %{buildroot}%{_sharedstatedir}/nova
 
-# Setup configuration files
+# Install init files
+install -p -D -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/%{name}-api
+install -p -D -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/%{name}-compute
+install -p -D -m 755 %{SOURCE11} %{buildroot}%{_initrddir}/%{name}-network
+install -p -D -m 755 %{SOURCE13} %{buildroot}%{_initrddir}/%{name}-objectstore
+install -p -D -m 755 %{SOURCE15} %{buildroot}%{_initrddir}/%{name}-scheduler
+install -p -D -m 755 %{SOURCE17} %{buildroot}%{_initrddir}/%{name}-volume
+
+# Install logrotate
+install -p -D -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
+
+# Install config files
+install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/nova/nova-api.conf
+install -p -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/nova/nova-compute.conf
+install -p -D -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/nova/nova-dhcpbridge.conf
+install -p -D -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/nova/nova-manage.conf
+install -p -D -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/nova/nova-network.conf
+install -p -D -m 644 %{SOURCE12} %{buildroot}%{_sysconfdir}/nova/nova-objectstore.conf
+install -p -D -m 644 %{SOURCE14} %{buildroot}%{_sysconfdir}/nova/nova-scheduler.conf
+install -p -D -m 644 %{SOURCE16} %{buildroot}%{_sysconfdir}/nova/nova-volume.conf
+
+# Install template files
 install -p -D -m 644 nova/auth/novarc.template %{buildroot}%{_datarootdir}/nova/novarc.template
 install -p -D -m 644 nova/cloudpipe/client.ovpn.template %{buildroot}%{_datarootdir}/nova/client.ovpn.template
 install -p -D -m 644 nova/virt/libvirt.qemu.xml.template %{buildroot}%{_datarootdir}/nova/libvirt.qemu.xml.template
@@ -172,7 +200,8 @@ install -p -D -m 644 nova/virt/interfaces.template %{buildroot}%{_datarootdir}/n
 # TODO debian/nova_sudoers
 
 # Clean CA directory
-find %{_sharedstatedir}/swift/CA -name .gitignore -or -name .placeholder -delete
+find %{buildroot}%{_sharedstatedir}/nova/CA -name .gitignore -delete
+find %{buildroot}%{_sharedstatedir}/nova/CA -name .placeholder -delete
 
 %clean
 rm -rf %{buildroot}
@@ -184,44 +213,84 @@ useradd -r -g nova -d %{_sharedstatedir}/nova -s /sbin/nologin \
 -c "OpenStack Nova Daemons" nova
 exit 0
 
+%post api
+/sbin/chkconfig --add nova-api
+
+%preun api
+if [ $1 = 0 ] ; then
+    /sbin/service nova-api stop >/dev/null 2>&1
+    /sbin/chkconfig --del nova-api
+fi
+
+%post compute
+/sbin/chkconfig --add nova-compute
+
+%preun compute
+if [ $1 = 0 ] ; then
+    /sbin/service nova-compute stop >/dev/null 2>&1
+    /sbin/chkconfig --del nova-compute
+fi
+
+%post network
+/sbin/chkconfig --add nova-network
+
+%preun network
+if [ $1 = 0 ] ; then
+    /sbin/service nova-network stop >/dev/null 2>&1
+    /sbin/chkconfig --del nova-network
+fi
+
+%post objectstore
+/sbin/chkconfig --add nova-objectstore
+
+%preun objectstore
+if [ $1 = 0 ] ; then
+    /sbin/service nova-objectstore stop >/dev/null 2>&1
+    /sbin/chkconfig --del nova-objectstore
+fi
+
+%post scheduler
+/sbin/chkconfig --add nova-scheduler
+
+%preun scheduler
+if [ $1 = 0 ] ; then
+    /sbin/service nova-scheduler stop >/dev/null 2>&1
+    /sbin/chkconfig --del nova-scheduler
+fi
+
+%post volume
+/sbin/chkconfig --add nova-volume
+
+%preun volume
+if [ $1 = 0 ] ; then
+    /sbin/service nova-volume stop >/dev/null 2>&1
+    /sbin/chkconfig --del nova-volume
+fi
+
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README
-%dir %{python_sitelib}/nova
-%{python_sitelib}/nova-%{version}-*.egg-info
-%{python_sitelib}/nova/*.py*
+%config(noreplace) %{_sysconfdir}/nova/nova-manage.conf
+%dir %{_sysconfdir}/nova
 %{_bindir}/nova-manage
-%{_sysconfdir}/swift
-# %{_sysconfdir}/nova/nova-manage.conf
-
-## TODO: confirm location
-%{python_sitelib}/nova/auth
-%{python_sitelib}/nova/cloudpipe
-%{python_sitelib}/nova/db
-%{python_sitelib}/nova/image
-%{python_sitelib}/nova/virt
-## TODO: confirm location
-
-# Common directories
-%{_sysconfdir}/nova
-%{_sharedstatedir}/nova
-%{_sharedstatedir}/nova/images
-%{_sharedstatedir}/nova/instances
-%{_sharedstatedir}/nova/keys
-%{_sharedstatedir}/nova/networks
-%{_sharedstatedir}/nova/tmp
+%{_datarootdir}/nova
 %{_localstatedir}/log/nova
+%{_sharedstatedir}/nova
+%{_sysconfdir}/logrotate.d/%{name}
+%{python_sitelib}/nova
+%{python_sitelib}/nova-%{version}-*.egg-info
 
 %files api
 %defattr(-,root,root,-)
-%{python_sitelib}/nova/api
+%config(noreplace) %{_sysconfdir}/nova/nova-api.conf
+%{_initrddir}/%{name}-api
 %{_bindir}/nova-api
 
 %files compute
 %defattr(-,root,root,-)
-%{python_sitelib}/nova/compute
+%config(noreplace) %{_sysconfdir}/nova/nova-compute.conf
 %{_bindir}/nova-compute
-# %{_sysconfdir}/nova/nova-compute.conf
+%{_initrddir}/%{name}-compute
 
 %files instancemonitor
 %defattr(-,root,root,-)
@@ -229,33 +298,30 @@ exit 0
 
 %files network
 %defattr(-,root,root,-)
-%{python_sitelib}/nova/network
+%config(noreplace) %{_sysconfdir}/nova/nova-network.conf
+%config(noreplace) %{_sysconfdir}/nova/nova-dhcpbridge.conf
 %{_bindir}/nova-network
 %{_bindir}/nova-dhcpbridge
-# %{_sysconfdir}/nova/nova-network.conf
-# %{_sysconfdir}/nova/nova-dhcpbridge.conf
+%{_initrddir}/%{name}-network
 
 %files objectstore
 %defattr(-,root,root,-)
-%{python_sitelib}/nova/objectstore
+%config(noreplace) %{_sysconfdir}/nova/nova-objectstore.conf
 %{_bindir}/nova-import-canonical-imagestore
 %{_bindir}/nova-objectstore
-# %{_sysconfdir}/nova/nova-objectstore.conf
-
-%files tests
-%{python_sitelib}/nova/tests
+%{_initrddir}/%{name}-objectstore
 
 %files scheduler
 %defattr(-,root,root,-)
-%{python_sitelib}/nova/scheduler
+%config(noreplace) %{_sysconfdir}/nova/nova-scheduler.conf
 %{_bindir}/nova-scheduler
-# %{_sysconfdir}/nova/nova-scheduler.conf
+%{_initrddir}/%{name}-scheduler
 
 %files volume
 %defattr(-,root,root,-)
-%{python_sitelib}/nova/volume
+%config(noreplace) %{_sysconfdir}/nova/nova-volume.conf
 %{_bindir}/nova-volume
-# %{_sysconfdir}/nova/nova-volume.conf
+%{_initrddir}/%{name}-volume
 
 %changelog
 * Thu Oct 21 2010 Silas Sewell <silas@sewell.ch> - 2010.1-1

@@ -4,12 +4,12 @@
 
 Name:           python-%{upstream_name}
 Version:        0.5.3
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Mock object framework
 
 Group:          Development/Languages
 License:        ASL 2.0
-URL:            http://pypi.python.org/pypi/mox
+URL:            http://code.google.com/p/pymox
 Source0:        http://pypi.python.org/packages/source/m/mox/mox-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
@@ -22,6 +22,9 @@ framework EasyMock.
 
 %prep
 %setup -q -n %{upstream_name}-%{version}
+# Fix non-executable-script error
+sed -i '/^#!\/usr\/bin\/python2.4$/,+1 d' mox.py
+sed -i '/^#!\/usr\/bin\/python2.4$/,+1 d' stubout.py
 
 %build
 %{__python} setup.py build
@@ -44,5 +47,8 @@ rm -rf %{buildroot}
 %{python_sitelib}/%{upstream_name}-%{version}*.egg-info
 
 %changelog
+* Tue Oct 26 2010 Silas Sewell <silas@sewell.ch> - 0.5.3-2
+- Fix various issues relating to review (shebangs, url, etc..)
+
 * Wed Oct 13 2010 Silas Sewell <silas@sewell.ch> - 0.5.3-1
 - Initial package

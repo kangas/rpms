@@ -15,10 +15,11 @@
 
 Name:           pymongo
 Version:        1.9
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        Python driver for MongoDB
 
 Group:          Development/Languages
+# All code is ASL 2.0 except bson/time64*.{c,h} which is MIT
 License:        ASL 2.0 and MIT
 URL:            http://api.mongodb.org/python
 Source0:        http://pypi.python.org/packages/source/p/pymongo/%{name}-%{version}.tar.gz
@@ -180,6 +181,9 @@ nosetests --exclude="$exclude"
 popd
 
 %changelog
+* Tue Oct 26 2010 Silas Sewell <silas@sewell.ch> - 1.9-4
+- Add comment about multi-license
+
 * Thu Oct 21 2010 Silas Sewell <silas@sewell.ch> - 1.9-3
 - Fixed tests so they actually run
 - Change python-devel to python2-devel

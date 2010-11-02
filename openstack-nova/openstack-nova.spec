@@ -34,6 +34,8 @@ BuildRequires:    dos2unix
 BuildRequires:    python-devel
 BuildRequires:    python-setuptools
 
+Requires:         python-nova = %{version}-%{release}
+
 Requires(post):   chkconfig
 Requires(postun): initscripts
 Requires(preun):  chkconfig
@@ -49,6 +51,36 @@ Nova is intended to be easy to extend, and adapt. For example, it currently
 uses an LDAP server for users and groups, but also includes a fake LDAP server,
 that stores data in Redis. It has extensive test coverage, and uses the Sphinx
 toolkit (the same as Python itself) for code and user documentation.
+
+%package -n       python-nova
+Summary:          Nova Python libraries
+Group:            Applications/System
+
+Requires:         PyXML
+Requires:         m2crypto
+Requires:         python-IPy
+Requires:         python-boto
+Requires:         python-carrot
+Requires:         python-daemon
+Requires:         python-eventlet
+Requires:         python-gflags
+Requires:         python-mox
+Requires:         python-redis
+Requires:         python-routes
+Requires:         python-sqlalchemy
+Requires:         python-tornado
+Requires:         python-twisted-core
+Requires:         python-twisted-web
+Requires:         python-webob
+Requires:         python-webob
+
+%description -n   python-nova
+Nova is a cloud computing fabric controller (the main part of an IaaS system)
+built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
+the Tornado and Twisted frameworks, and relies on the standard AMQP messaging
+protocol, and the Redis KVS.
+
+This package contains the %{name} Python library.
 
 %package          api
 Summary:          A nova api server
@@ -277,6 +309,8 @@ fi
 %{_localstatedir}/log/nova
 %{_sharedstatedir}/nova
 %{_sysconfdir}/logrotate.d/%{name}
+
+%files -n python-nova
 %{python_sitelib}/nova
 %{python_sitelib}/nova-%{version}-*.egg-info
 

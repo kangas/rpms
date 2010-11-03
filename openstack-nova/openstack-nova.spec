@@ -77,7 +77,6 @@ Requires:         python-twisted-web
 Requires:         python-webob
 
 %if 0%{?with_docs}
-# Start documentation
 BuildRequires:    python-IPy
 BuildRequires:    python-boto
 #BuildRequires:    python-carrot
@@ -92,7 +91,6 @@ BuildRequires:    python-tornado
 BuildRequires:    python-twisted-core
 BuildRequires:    python-twisted-web
 BuildRequires:    python-webob
-# End documentation
 %endif
 
 %description -n   python-nova

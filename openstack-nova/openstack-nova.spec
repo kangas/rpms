@@ -11,26 +11,24 @@ Group:            Development/Languages
 License:          ASL 2.0
 URL:              http://launchpad.net/nova
 Source0:          http://launchpad.net/nova/austin/%{version}/+download/nova-%{version}.tar.gz
-#Source1:          %{name}-functions
-Source2:          nova-api.conf
-Source3:          %{name}-api.init
-Source4:          nova-compute.conf
-Source5:          %{name}-compute.init
-Source6:          nova-dhcpbridge.conf
-Source7:          %{name}.logrotate
-Source8:          nova-manage.conf
-Source10:         nova-network.conf
-Source11:         %{name}-network.init
-Source12:         nova-objectstore.conf
-Source13:         %{name}-objectstore.init
-Source14:         nova-scheduler.conf
-Source15:         %{name}-scheduler.init
-Source16:         nova-volume.conf
-Source17:         %{name}-volume.init
+Source1:          %{name}-api.conf
+Source2:          %{name}-api.init
+Source3:          %{name}-compute.conf
+Source4:          %{name}-compute.init
+Source5:          %{name}-dhcpbridge.conf
+Source6:          %{name}.logrotate
+Source7:          %{name}-manage.conf
+Source8:          %{name}-network.conf
+Source9:          %{name}-network.init
+Source10:         %{name}-objectstore.conf
+Source11:         %{name}-objectstore.init
+Source12:         %{name}-scheduler.conf
+Source13:         %{name}-scheduler.init
+Source14:         %{name}-volume.conf
+Source15:         %{name}-volume.init
 BuildRoot:        %{_tmppath}/nova-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:        noarch
-BuildRequires:    dos2unix
 BuildRequires:    python-devel
 BuildRequires:    python-setuptools
 
@@ -202,25 +200,25 @@ install -d -m 755 %{buildroot}%{_localstatedir}/log/nova
 cp -rp CA %{buildroot}%{_sharedstatedir}/nova
 
 # Install init files
-install -p -D -m 755 %{SOURCE3} %{buildroot}%{_initrddir}/%{name}-api
-install -p -D -m 755 %{SOURCE5} %{buildroot}%{_initrddir}/%{name}-compute
-install -p -D -m 755 %{SOURCE11} %{buildroot}%{_initrddir}/%{name}-network
-install -p -D -m 755 %{SOURCE13} %{buildroot}%{_initrddir}/%{name}-objectstore
-install -p -D -m 755 %{SOURCE15} %{buildroot}%{_initrddir}/%{name}-scheduler
-install -p -D -m 755 %{SOURCE17} %{buildroot}%{_initrddir}/%{name}-volume
+install -p -D -m 755 %{SOURCE2} %{buildroot}%{_initrddir}/%{name}-api
+install -p -D -m 755 %{SOURCE4} %{buildroot}%{_initrddir}/%{name}-compute
+install -p -D -m 755 %{SOURCE9} %{buildroot}%{_initrddir}/%{name}-network
+install -p -D -m 755 %{SOURCE11} %{buildroot}%{_initrddir}/%{name}-objectstore
+install -p -D -m 755 %{SOURCE13} %{buildroot}%{_initrddir}/%{name}-scheduler
+install -p -D -m 755 %{SOURCE15} %{buildroot}%{_initrddir}/%{name}-volume
 
 # Install logrotate
 install -p -D -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/logrotate.d/%{name}
 
 # Install config files
-install -p -D -m 644 %{SOURCE2} %{buildroot}%{_sysconfdir}/nova/nova-api.conf
-install -p -D -m 644 %{SOURCE4} %{buildroot}%{_sysconfdir}/nova/nova-compute.conf
-install -p -D -m 644 %{SOURCE6} %{buildroot}%{_sysconfdir}/nova/nova-dhcpbridge.conf
-install -p -D -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/nova/nova-manage.conf
-install -p -D -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/nova/nova-network.conf
-install -p -D -m 644 %{SOURCE12} %{buildroot}%{_sysconfdir}/nova/nova-objectstore.conf
-install -p -D -m 644 %{SOURCE14} %{buildroot}%{_sysconfdir}/nova/nova-scheduler.conf
-install -p -D -m 644 %{SOURCE16} %{buildroot}%{_sysconfdir}/nova/nova-volume.conf
+install -p -D -m 644 %{SOURCE1} %{buildroot}%{_sysconfdir}/nova/nova-api.conf
+install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/nova/nova-compute.conf
+install -p -D -m 644 %{SOURCE5} %{buildroot}%{_sysconfdir}/nova/nova-dhcpbridge.conf
+install -p -D -m 644 %{SOURCE7} %{buildroot}%{_sysconfdir}/nova/nova-manage.conf
+install -p -D -m 644 %{SOURCE8} %{buildroot}%{_sysconfdir}/nova/nova-network.conf
+install -p -D -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/nova/nova-objectstore.conf
+install -p -D -m 644 %{SOURCE12} %{buildroot}%{_sysconfdir}/nova/nova-scheduler.conf
+install -p -D -m 644 %{SOURCE14} %{buildroot}%{_sysconfdir}/nova/nova-volume.conf
 
 # Install template files
 install -p -D -m 644 nova/auth/novarc.template %{buildroot}%{_datarootdir}/nova/novarc.template
@@ -311,6 +309,7 @@ fi
 %{_sharedstatedir}/nova
 
 %files -n python-nova
+%defattr(-,root,root,-)
 %{python_sitelib}/nova
 %{python_sitelib}/nova-%{version}-*.egg-info
 

@@ -1,77 +1,86 @@
-#! /bin/sh
+#!/bin/sh
+
 ### BEGIN INIT INFO
-# Provides:          nova-compute
+# Provides:          openstack-nova-compute
 # Required-Start:    $remote_fs $syslog
 # Required-Stop:     $remote_fs $syslog
-# Default-Start:     2 3 4 5
 # Default-Stop:      0 1 6
-# Short-Description: nova-compute
-# Description:       nova-compute
+# Short-Description: Nova compute server
+# Description:       Compute server for nova.
 ### END INIT INFO
 
+# openstack-nova-compute: nova compute server
+#
+# chkconfig: - 20 80
+# description: Compute server for nova.
 
-set -e
+. /etc/rc.d/init.d/functions
 
-DAEMON=/usr/bin/nova-compute
-DAEMON_ARGS="--flagfile=/etc/nova/nova-compute.conf"
-PIDFILE=/var/run/nova/nova-compute.pid
+name="compute"
+USER="nova"
+GROUP="nobody"
+FLAGFILE="/etc/nova/nova-$name.conf"
+PIDFILE="/var/run/nova/nova-$name.pid"
 
-ENABLED=true
+[ -e "/etc/sysconfig/openstack-nova-$name" ] && . "/etc/sysconfig/openstack-nova-$name"
 
-if test -f /etc/default/nova-compute; then
-  . /etc/default/nova-compute
-fi
+uid="$(getent passwd $USER | cut -f3 -d:)"
+gid="$(getent passwd $GROUP | cut -f4 -d:)"
+DAEMON_OPTIONS="--uid $uid --gid $gid --pidfile $PIDFILE"
+OPTIONS="${OPTIONS} $DAEMON_OPTIONS"
 
-mkdir -p /var/run/nova
-chown nova:nogroup /var/run/nova
+lockfile="/var/lock/subsys/openstack-nova-compute"
 
-uid="$(getent passwd nova | cut -f3 -d:)"
-gid="$(getent passwd nova | cut -f4 -d:)"
-DAEMON_ARGS="${DAEMON_ARGS} --uid $uid --gid $gid --pidfile $PIDFILE"
+start() {
+    /usr/bin/nova-$name $OPTIONS start &>/dev/null
+    retval=$?
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
 
-. /lib/lsb/init-functions
+stop() {
+    /usr/bin/nova-$name $OPTIONS stop &>/dev/null
+    retval=$?
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
 
-export PATH="${PATH:+$PATH:}/usr/sbin:/sbin"
-export TMPDIR=/var/lib/nova/tmp
+restart() {
+    stop
+    start
+}
+
+rh_status() {
+    status -p $PIDFILE "nova-$name"
+}
+
+rh_status_q() {
+    rh_status &> /dev/null
+}
 
 case "$1" in
-  start)
-    test "$ENABLED" = "true" || exit 0
-    log_daemon_msg "Starting nova compute" "nova-compute"
-    cd /var/run
-    if $DAEMON $DAEMON_ARGS start; then
-      log_end_msg 0
-    else
-      log_end_msg 1
-    fi
-    ;;
-  stop)
-    test "$ENABLED" = "true" || exit 0
-    log_daemon_msg "Stopping nova compute" "nova-compute"
-    cd /var/run
-    if $DAEMON $DAEMON_ARGS stop; then
-      log_end_msg 0
-    else
-      log_end_msg 1
-    fi
-    ;;
-  restart|force-reload)
-    test "$ENABLED" = "true" || exit 1
-    cd /var/run
-    if $DAEMON $DAEMON_ARGS restart; then
-      log_end_msg 0
-    else
-      log_end_msg 1
-    fi
-    ;;
-  status)
-    test "$ENABLED" = "true" || exit 0
-    status_of_proc -p $PIDFILE $DAEMON nova-compute && exit 0 || exit $?
-    ;;
-  *)
-    log_action_msg "Usage: /etc/init.d/nova-compute {start|stop|restart|force-reload|status}"
-    exit 1
-    ;;
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart}"
+        exit 2
 esac
-
-exit 0
+exit $?

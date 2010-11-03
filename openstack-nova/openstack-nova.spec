@@ -302,13 +302,13 @@ fi
 %files
 %defattr(-,root,root,-)
 %doc LICENSE README
+%config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %config(noreplace) %{_sysconfdir}/nova/nova-manage.conf
 %dir %{_sysconfdir}/nova
 %{_bindir}/nova-manage
 %{_datarootdir}/nova
 %{_localstatedir}/log/nova
 %{_sharedstatedir}/nova
-%{_sysconfdir}/logrotate.d/%{name}
 
 %files -n python-nova
 %{python_sitelib}/nova

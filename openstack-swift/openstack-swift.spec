@@ -116,6 +116,7 @@ Summary:          Documentation for %{name}
 Group:            Documentation
 
 BuildRequires:    python-sphinx
+# Required to build module documents
 BuildRequires:    python-eventlet
 BuildRequires:    python-simplejson
 BuildRequires:    python-webob

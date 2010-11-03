@@ -76,23 +76,6 @@ Requires:         python-twisted-core
 Requires:         python-twisted-web
 Requires:         python-webob
 
-%if 0%{?with_doc}
-BuildRequires:    python-IPy
-BuildRequires:    python-boto
-#BuildRequires:    python-carrot
-BuildRequires:    python-daemon
-BuildRequires:    python-eventlet
-#BuildRequires:    python-gflags
-#BuildRequires:    python-mox
-#BuildRequires:    python-redis
-BuildRequires:    python-routes
-BuildRequires:    python-sqlalchemy
-BuildRequires:    python-tornado
-BuildRequires:    python-twisted-core
-BuildRequires:    python-twisted-web
-BuildRequires:    python-webob
-%endif
-
 %description -n   python-nova
 Nova is a cloud computing fabric controller (the main part of an IaaS system)
 built to match the popular AWS EC2 and S3 APIs. It is written in Python, using
@@ -205,6 +188,21 @@ Summary:          Documentation for %{name}
 Group:            Documentation
 
 BuildRequires:    python-sphinx
+# Required to build module documents
+BuildRequires:    python-IPy
+BuildRequires:    python-boto
+#BuildRequires:    python-carrot
+BuildRequires:    python-daemon
+BuildRequires:    python-eventlet
+#BuildRequires:    python-gflags
+#BuildRequires:    python-mox
+#BuildRequires:    python-redis
+BuildRequires:    python-routes
+BuildRequires:    python-sqlalchemy
+BuildRequires:    python-tornado
+BuildRequires:    python-twisted-core
+BuildRequires:    python-twisted-web
+BuildRequires:    python-webob
 
 %description      doc
 Nova is a cloud computing fabric controller (the main part of an IaaS system)

@@ -1,4 +1,4 @@
-%global with_docs 1
+%global with_doc 1
 
 %if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
@@ -110,7 +110,7 @@ in clusters for reliable, redundant, and large-scale storage of static objects.
 
 This package contains the %{name} proxy server.
 
-%if 0%{?with_docs}
+%if 0%{?with_doc}
 %package doc
 Summary:          Documentation for %{name}
 Group:            Documentation
@@ -136,7 +136,7 @@ dos2unix LICENSE
 %build
 %{__python} setup.py build
 
-%if 0%{?with_docs}
+%if 0%{?with_doc}
 pushd doc; make html; popd
 # Fix hidden-file-or-dir warning 
 rm doc/build/html/.buildinfo
@@ -331,7 +331,7 @@ fi
 %{_bindir}/swift-proxy-server
 %{python_sitelib}/swift/proxy
 
-%if 0%{?with_docs}
+%if 0%{?with_doc}
 %files doc
 %defattr(-,root,root,-)
 %doc LICENSE doc/build/html

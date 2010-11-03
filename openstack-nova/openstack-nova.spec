@@ -1,4 +1,4 @@
-%global with_docs 1
+%global with_doc 1
 
 %if ! (0%{?fedora} > 12 || 0%{?rhel} > 5)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print(get_python_lib())")}
@@ -76,7 +76,7 @@ Requires:         python-twisted-core
 Requires:         python-twisted-web
 Requires:         python-webob
 
-%if 0%{?with_docs}
+%if 0%{?with_doc}
 BuildRequires:    python-IPy
 BuildRequires:    python-boto
 #BuildRequires:    python-carrot
@@ -199,7 +199,7 @@ protocol, and the Redis KVS.
 
 This package contains the %{name} volume server.
 
-%if 0%{?with_docs}
+%if 0%{?with_doc}
 %package doc
 Summary:          Documentation for %{name}
 Group:            Documentation
@@ -225,7 +225,7 @@ This package contains documentation files for %{name}.
 rm -rf %{buildroot}
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
 
-%if 0%{?with_docs}
+%if 0%{?with_doc}
 export PYTHONPATH="$( pwd ):$PYTHONPATH"
 pushd doc
 sphinx-build -b html source build/html
@@ -406,7 +406,7 @@ fi
 %{_bindir}/nova-volume
 %{_initrddir}/%{name}-volume
 
-%if 0%{?with_docs}
+%if 0%{?with_doc}
 %files doc
 %defattr(-,root,root,-)
 %doc LICENSE doc/build/html

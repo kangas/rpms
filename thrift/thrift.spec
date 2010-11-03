@@ -23,24 +23,32 @@
 # Python
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
 
+# Fix private-shared-object-provides error
+%{?filter_setup:
+%filter_provides_in %{python_sitearch}.*\.so$
+%filter_setup
+}
+
 # Ruby
 %{!?ruby_sitelib: %global ruby_sitelib %(ruby -rrbconfig -e "puts Config::CONFIG['sitelibdir']")}
 %{!?ruby_sitearch: %global ruby_sitearch %(ruby -rrbconfig -e "puts Config::CONFIG['sitearchdir']")}
 
 Name:             thrift
-Version:          0.2.0
+Version:          0.5.0
 Release:          1%{?dist}
 Summary:          A multi-language RPC and serialization framework
 
 Group:            System Environment/Libraries
 License:          ASL 2.0
 URL:              http://incubator.apache.org/thrift
-Source0:          http://www.apache.org/dist/incubator/thrift/%{version}-incubating/%{name}-%{version}-incubating.tar.gz
+Source0:          http://www.apache.org/dist//incubator/thrift/%{version}-incubating/thrift-%{version}.tar.gz
 Source1:          thrift_protocol.ini
+Patch0:           thrift-0.5.0-noivy.patch
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:    byacc
 BuildRequires:    boost-devel >= 1.33.1
+BuildRequires:    dos2unix
 BuildRequires:    flex
 BuildRequires:    libevent-devel
 BuildRequires:    libtool
@@ -155,9 +163,11 @@ BuildRequires:    ant
 BuildRequires:    jakarta-commons-lang
 BuildRequires:    java-1.6.0-openjdk-devel
 BuildRequires:    slf4j
+BuildRequires:    tomcat5-servlet-2.4-api
 Requires:         jakarta-commons-lang
 Requires:         java-1.6.0-openjdk
 Requires:         slf4j
+Requires:         tomcat5-servlet-2.4-api
 
 %description java
 Java bindings for %{name}.
@@ -182,6 +192,7 @@ BuildRequires:    perl
 Requires:         perl(:MODULE_COMPAT_%(eval "`%{__perl} -V:version`"; echo $version))
 Requires:         perl(Bit::Vector)
 Requires:         perl(Class::Accessor)
+Provides:         perl(Thrift) = %{version}-%{release}
 
 %description perl
 Perl bindings for %{name}.
@@ -221,6 +232,7 @@ Ruby bindings for %{name}.
 
 %prep
 %setup -q
+%patch0 -p1
 
 # Fix spurious-executable-perm warning
 find tutorial/ -type f -exec chmod 0644 {} \;
@@ -229,7 +241,7 @@ find tutorial/ -type f -exec chmod 0644 {} \;
 sed -i '/#/d;/^$/d' lib/hs/Setup.lhs
 
 %build
-%configure --without-java --without-perl --without-ruby --enable-static=no
+%configure --without-java --without-perl --without-php --without-ruby --enable-static=no
 %{__make} %{?_smp_mflags}
 
 # Build Haskell
@@ -245,7 +257,7 @@ popd
 %if %{with_java}
 # Build Java
 pushd lib/java
-ant dist javadoc -lib %{_javadir} -lib %{_javadir}/slf4j -Dnoivy=
+ant dist javadoc -lib %{_javadir} -lib %{_javadir}/slf4j -Dnoivy=1
 popd
 %endif
 
@@ -470,6 +482,9 @@ fi
 %{ruby_sitelib}/thrift*
 
 %changelog
+* Tue Nov 02 2010 Silas Sewell <silas@sewell.ch> - 0.5.0-1
+- Update to 0.5.0
+
 * Mon Mar 01 2010 Silas Sewell <silas@sewell.ch> - 0.2.0-1
 - Update to non-snapshot release
 - Various tweaks for release package

@@ -299,7 +299,7 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE README
+%doc README
 %config(noreplace) %{_sysconfdir}/logrotate.d/%{name}
 %config(noreplace) %{_sysconfdir}/nova/nova-manage.conf
 %dir %{_sysconfdir}/nova
@@ -310,6 +310,7 @@ fi
 
 %files -n python-nova
 %defattr(-,root,root,-)
+%doc LICENSE
 %{python_sitelib}/nova
 %{python_sitelib}/nova-%{version}-*.egg-info
 

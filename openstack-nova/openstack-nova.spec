@@ -290,57 +290,57 @@ useradd -r -g nova -d %{_sharedstatedir}/nova -s /sbin/nologin \
 exit 0
 
 %post api
-/sbin/chkconfig --add nova-api
+/sbin/chkconfig --add openstack-nova-api
 
 %preun api
 if [ $1 = 0 ] ; then
-    /sbin/service nova-api stop >/dev/null 2>&1
-    /sbin/chkconfig --del nova-api
+    /sbin/service openstack-nova-api stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-nova-api
 fi
 
 %post compute
-/sbin/chkconfig --add nova-compute
+/sbin/chkconfig --add openstack-nova-compute
 
 %preun compute
 if [ $1 = 0 ] ; then
-    /sbin/service nova-compute stop >/dev/null 2>&1
-    /sbin/chkconfig --del nova-compute
+    /sbin/service openstack-nova-compute stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-nova-compute
 fi
 
 %post network
-/sbin/chkconfig --add nova-network
+/sbin/chkconfig --add openstack-nova-network
 
 %preun network
 if [ $1 = 0 ] ; then
-    /sbin/service nova-network stop >/dev/null 2>&1
-    /sbin/chkconfig --del nova-network
+    /sbin/service openstack-nova-network stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-nova-network
 fi
 
 %post objectstore
-/sbin/chkconfig --add nova-objectstore
+/sbin/chkconfig --add openstack-nova-objectstore
 
 %preun objectstore
 if [ $1 = 0 ] ; then
-    /sbin/service nova-objectstore stop >/dev/null 2>&1
-    /sbin/chkconfig --del nova-objectstore
+    /sbin/service openstack-nova-objectstore stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-nova-objectstore
 fi
 
 %post scheduler
-/sbin/chkconfig --add nova-scheduler
+/sbin/chkconfig --add openstack-nova-scheduler
 
 %preun scheduler
 if [ $1 = 0 ] ; then
-    /sbin/service nova-scheduler stop >/dev/null 2>&1
-    /sbin/chkconfig --del nova-scheduler
+    /sbin/service openstack-nova-scheduler stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-nova-scheduler
 fi
 
 %post volume
-/sbin/chkconfig --add nova-volume
+/sbin/chkconfig --add openstack-nova-volume
 
 %preun volume
 if [ $1 = 0 ] ; then
-    /sbin/service nova-volume stop >/dev/null 2>&1
-    /sbin/chkconfig --del nova-volume
+    /sbin/service openstack-nova-volume stop >/dev/null 2>&1
+    /sbin/chkconfig --del openstack-nova-volume
 fi
 
 %files

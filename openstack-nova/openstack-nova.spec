@@ -6,12 +6,12 @@
 
 Name:             openstack-nova
 Version:          2010.1
-Release:          1%{?dist}
+Release:          2%{?dist}
 Summary:          OpenStack Compute (nova)
 
 Group:            Development/Languages
 License:          ASL 2.0
-URL:              http://launchpad.net/nova
+URL:              http://openstack.org/projects/compute/
 Source0:          http://launchpad.net/nova/austin/%{version}/+download/nova-%{version}.tar.gz
 Source1:          %{name}-api.conf
 Source2:          %{name}-api.init
@@ -70,7 +70,7 @@ Requires:         python-gflags
 Requires:         python-mox
 Requires:         python-redis
 Requires:         python-routes
-Requires:         python-sqlalchemy
+Requires:         python-sqlalchemy >= 0.6
 Requires:         python-tornado
 Requires:         python-twisted-core
 Requires:         python-twisted-web
@@ -103,6 +103,8 @@ Summary:          A nova compute server
 Group:            Applications/System
 
 Requires:         %{name} = %{version}-%{release}
+Requires:         libvirt-python
+Requires:         libxml2-python
 
 %description      compute
 Nova is a cloud computing fabric controller (the main part of an IaaS system)
@@ -268,6 +270,9 @@ install -p -D -m 644 %{SOURCE10} %{buildroot}%{_sysconfdir}/nova/nova-objectstor
 install -p -D -m 644 %{SOURCE12} %{buildroot}%{_sysconfdir}/nova/nova-scheduler.conf
 install -p -D -m 644 %{SOURCE14} %{buildroot}%{_sysconfdir}/nova/nova-volume.conf
 
+# Install pid directory
+install -d -m 755 %{buildroot}%{_localstatedir}/run/nova
+
 # Install template files
 install -p -D -m 644 nova/auth/novarc.template %{buildroot}%{_datarootdir}/nova/novarc.template
 install -p -D -m 644 nova/cloudpipe/client.ovpn.template %{buildroot}%{_datarootdir}/nova/client.ovpn.template
@@ -350,9 +355,11 @@ fi
 %config(noreplace) %{_sysconfdir}/nova/nova-manage.conf
 %config(noreplace) %{_sysconfdir}/sudoers.d/%{name}
 %dir %{_sysconfdir}/nova
+%dir %attr(0755, nova, root) %{_localstatedir}/log/nova
+%dir %attr(0755, nova, root) %{_localstatedir}/run/nova
 %{_bindir}/nova-manage
 %{_datarootdir}/nova
-%{_localstatedir}/log/nova
+%defattr(-,nova,nobody,-)
 %{_sharedstatedir}/nova
 
 %files -n python-nova
@@ -411,5 +418,8 @@ fi
 %endif
 
 %changelog
+* Thu Nov 04 2010 Silas Sewell <silas@sewell.ch> - 2010.1-2
+- Fix various issues (init, permissions, config, etc..)
+
 * Thu Oct 21 2010 Silas Sewell <silas@sewell.ch> - 2010.1-1
 - Initial build

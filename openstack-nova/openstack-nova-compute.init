@@ -26,7 +26,7 @@ PIDFILE="/var/run/nova/nova-$name.pid"
 
 uid="$(getent passwd $USER | cut -f3 -d:)"
 gid="$(getent passwd $GROUP | cut -f4 -d:)"
-DAEMON_OPTIONS="--uid $uid --gid $gid --pidfile $PIDFILE"
+DAEMON_OPTIONS="--flagfile=$FLAGFILE --uid=$uid --gid=$gid --pidfile=$PIDFILE"
 OPTIONS="${OPTIONS} $DAEMON_OPTIONS"
 
 lockfile="/var/lock/subsys/openstack-nova-compute"

@@ -1,4 +1,4 @@
-%if 0%{?fedora} > 11
+%if 0%{?fedora} > 12
 %global with_csharp 0
 %global with_ghc 0
 %global with_java 1
@@ -14,11 +14,12 @@
 %global erlangdir %{_libdir}/erlang
 
 # Haskell
-%{!?ghc_version: %global ghc_version 6.10.1}
 %global pkg_name Thrift
+%global ghc_pkg_deps ghc-HTTP-devel, ghc-binary-devel, ghc-network-devel, ghc-xhtml-devel
 
 %bcond_without doc
 %bcond_without prof
+%bcond_without shared
 
 # Python
 %{!?python_sitearch: %global python_sitearch %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib(1)")}
@@ -106,9 +107,10 @@ Provides:         %{name}-ghc-devel = %{version}-%{release}
 ExclusiveArch:    %{ix86} x86_64 ppc alpha
 BuildRequires:    cabal-install
 BuildRequires:    ghc
-BuildRequires:    ghc-network-devel
-BuildRequires:    ghc-network-prof
+BuildRequires:    ghc-prof
+BuildRequires:    haddock
 BuildRequires:    ghc-rpm-macros
+%{?ghc_pkg_deps:BuildRequires:  %{ghc_pkg_deps}, %(echo %{ghc_pkg_deps} | sed -e "s/\(ghc-[^, ]\+\)-devel/\1-doc,\1-prof/g")}
 
 %description ghc
 Haskell bindings for %{name}.
@@ -117,13 +119,13 @@ Haskell bindings for %{name}.
 Version:          0.1.0
 Summary:          Haskell %{pkg_name} library
 Group:            Development/Libraries
-Requires:         ghc = %{ghc_version}
-Requires(post):   ghc = %{ghc_version}
-Requires(preun):  ghc = %{ghc_version}
+Requires:         ghc
+Requires(post):   ghc
+Requires(preun):  ghc
 
 %description ghc-devel
 This package contains the development files for %{name}-ghc-devel
-built for ghc-%{ghc_version}.
+built for ghc.
 
 %if %{with doc}
 %package ghc-doc
@@ -131,9 +133,9 @@ Version:          0.1.0
 Summary:          Documentation for %{name}-ghc
 Group:            Development/Libraries
 BuildRequires:    ghc-doc
-Requires:         ghc-doc = %{ghc_version}
-Requires(post):   ghc-doc = %{ghc_version}
-Requires(postun): ghc-doc = %{ghc_version}
+Requires:         ghc-doc
+Requires(post):   ghc-doc
+Requires(postun): ghc-doc
 
 %description ghc-doc
 This package contains development documentation files for the %{name}-ghc
@@ -147,11 +149,11 @@ Summary:          Profiling libraries for %{name}-ghc
 Group:            Development/Libraries
 BuildRequires:    ghc-prof
 Requires:         %{name}-ghc = %{version}-%{release}
-Requires:         ghc-prof = %{ghc_version}
+Requires:         ghc-prof
 
 %description ghc-prof
 This package contains profiling libraries for %{name}-ghc
-built for ghc-%{ghc_version}.
+built for ghc.
 %endif
 %endif
 
@@ -392,7 +394,7 @@ fi
 
 %files
 %defattr(-,root,root,-)
-%doc CHANGES CONTRIBUTORS LICENSE NEWS NOTICE README doc/ tutorial/
+%doc CHANGES CONTRIBUTORS LICENSE NEWS NOTICE README doc/
 %{_bindir}/thrift
 
 %files cpp
@@ -410,7 +412,7 @@ fi
 %if 0%{?with_csharp}
 %files csharp
 %defattr(-,root,root,-)
-%doc lib/csharp/README
+%doc lib/csharp/README tutorial/csharp
 %{_libdir}/mono/gac/Thrift
 %{_libdir}/mono/thrift
 %endif
@@ -421,11 +423,11 @@ fi
 %{erlangdir}/lib/%{name}-%{version}
 
 %if %{with_ghc}
-%files ghc
+%files ghc -f lib/hs/%{name}.files
 %defattr(-,root,root,-)
 %doc lib/hs/README lib/hs/TODO
 
-%files ghc-devel -f lib/hs/thrift-devel.files
+%files ghc-devel -f lib/hs/%{name}-devel.files
 %defattr(-,root,root,-)
 %{_docdir}/%{name}-%{version}
 
@@ -436,7 +438,7 @@ fi
 %endif
 
 %if %{with prof}
-%files ghc-prof -f lib/hs/thrift-prof.files
+%files ghc-prof -f lib/hs/%{name}-prof.files
 %defattr(-,root,root,-)
 %doc lib/hs/README
 %endif

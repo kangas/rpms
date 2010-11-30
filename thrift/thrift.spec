@@ -1,6 +1,6 @@
 %if 0%{?fedora} > 12
 %global with_csharp 0
-%global with_ghc 0
+%global with_ghc 1
 %global with_java 1
 %global with_php 1
 %else
@@ -100,10 +100,9 @@ Erlang bindings for %{name}.
 
 %if 0%{?with_ghc}
 %package ghc
-Version:          0.1.0
+Version:          0.2.0
 Summary:          Haskell bindings for %{name}
 Group:            Development/Libraries
-Provides:         %{name}-ghc-devel = %{version}-%{release}
 ExclusiveArch:    %{ix86} x86_64 ppc alpha
 BuildRequires:    cabal-install
 BuildRequires:    ghc
@@ -116,7 +115,7 @@ BuildRequires:    ghc-rpm-macros
 Haskell bindings for %{name}.
 
 %package ghc-devel
-Version:          0.1.0
+Version:          0.2.0
 Summary:          Haskell %{pkg_name} library
 Group:            Development/Libraries
 Requires:         ghc
@@ -129,7 +128,7 @@ built for ghc.
 
 %if %{with doc}
 %package ghc-doc
-Version:          0.1.0
+Version:          0.2.0
 Summary:          Documentation for %{name}-ghc
 Group:            Development/Libraries
 BuildRequires:    ghc-doc
@@ -144,7 +143,7 @@ library.
 
 %if %{with prof}
 %package ghc-prof
-Version:          0.1.0
+Version:          0.2.0
 Summary:          Profiling libraries for %{name}-ghc
 Group:            Development/Libraries
 BuildRequires:    ghc-prof
@@ -243,20 +242,23 @@ find tutorial/ -type f -exec chmod 0644 {} \;
 sed -i '/#/d;/^$/d' lib/hs/Setup.lhs
 
 %build
-%configure --without-java --without-perl --without-php --without-ruby --enable-static=no
+%configure \
+  --without-haskell \
+  --without-java \
+  --without-perl \
+  --without-php \
+  --without-ruby \
+  --enable-static=no
 %{__make} %{?_smp_mflags}
 
 # Build Haskell
 %if 0%{?with_ghc}
 pushd lib/hs
-%cabal_configure --ghc %{!?without_prof:-p}
-%cabal build
-%cabal haddock
-%ghc_gen_scripts
+%ghc_lib_build
 popd
 %endif
 
-%if %{with_java}
+%if 0%{?with_java}
 # Build Java
 pushd lib/java
 ant dist javadoc -lib %{_javadir} -lib %{_javadir}/slf4j -Dnoivy=1
@@ -301,26 +303,15 @@ find %{buildroot} -type f -name "*.la" -exec rm -f {} ';'
 gacutil -i lib/csharp/Thrift.dll -f -package Thrift -root %{buildroot}%{_libdir}
 %endif
 
-# Install Erlang
-%{__mkdir_p} %{buildroot}%{erlangdir}/lib/%{name}-%{version}
-%{__cp} -rp lib/erl/* %{buildroot}%{erlangdir}/lib/%{name}-%{version}
-
-# Cleanup Erlang install
-pushd %{buildroot}%{erlangdir}/lib/%{name}-%{version}
-%{__rm} -fr Makefile README build/
-popd
-
 # Install Haskell
 %if 0%{?with_ghc}
 pushd lib/hs
-%cabal_install
-%ghc_install_scripts
-%ghc_gen_filelists %{name}
+%ghc_lib_install
 popd
 %endif
 
 # Install Java
-%if %{with_java}
+%if 0%{?with_java}
 pushd lib/java
 %{__mkdir_p} %{buildroot}%{_javadir}
 %{__cp} -p libthrift.jar %{buildroot}%{_javadir}
@@ -422,29 +413,23 @@ fi
 %doc lib/erl/README tutorial/erl tutorial/*.thrift
 %{erlangdir}/lib/%{name}-%{version}
 
-%if %{with_ghc}
-%files ghc -f lib/hs/%{name}.files
+%if 0%{?with_ghc}
+%files ghc -f lib/hs/ghc-Thrift.files
 %defattr(-,root,root,-)
 %doc lib/hs/README lib/hs/TODO
 
-%files ghc-devel -f lib/hs/%{name}-devel.files
-%defattr(-,root,root,-)
-%{_docdir}/%{name}-%{version}
+%files ghc-devel -f lib/hs/ghc-Thrift-devel.files
 
 %if %{with doc}
-%files ghc-doc
-%defattr(-,root,root,-)
-%ghcdocdir
+%files ghc-doc -f lib/hs/ghc-Thrift-doc.files
 %endif
 
 %if %{with prof}
-%files ghc-prof -f lib/hs/%{name}-prof.files
-%defattr(-,root,root,-)
-%doc lib/hs/README
+%files ghc-prof -f lib/hs/ghc-Thrift-prof.files
 %endif
 %endif
 
-%if %{with_java}
+%if 0%{?with_java}
 %files java
 %defattr(-,root,root,-)
 %doc lib/java/README tutorial/java tutorial/*.thrift

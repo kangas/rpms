@@ -22,6 +22,16 @@ Python. Programmers can use it to easily add search functionality to their
 applications and websites. Every part of how Whoosh works can be extended or
 replaced to meet your needs exactly.
 
+Some of Whoosh's features include:
+
+  * Pythonic API
+  * Pure Python, no compilation or binary packages
+  * Fielded indexing and search
+  * Fast indexing and retrieval
+  * Pluggable scoring algorithm, text analysis, storage, and posting format
+  * Powerful query language
+  * Pure Python spell-checker
+
 %prep
 %setup -q -n Whoosh-%{version}
 

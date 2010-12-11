@@ -43,6 +43,11 @@ Key differences between Cyclone and Tornado
 %prep
 %setup -q -n %{realname}-%{version}
 %patch0 -p1
+
+# Remove bundled library
+rm -fr cyclone/tx
+
+# Remove headers from modules
 sed -i '/#!\/usr\/bin\/env python/d' %{realname}/*.py
 
 %build

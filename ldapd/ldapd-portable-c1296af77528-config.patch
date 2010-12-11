@@ -1,0 +1,15 @@
+diff -up ldapd-portable/ldapd/ldapd.h.orig ldapd-portable/ldapd/ldapd.h
+--- ldapd-portable/ldapd/ldapd.h.orig	2010-12-11 00:24:30.673861324 -0500
++++ ldapd-portable/ldapd/ldapd.h	2010-12-11 02:41:04.600303186 -0500
+@@ -39,9 +39,9 @@
+ #include "compat.h"
+ 
+ #define CONFFILE		 "/etc/ldapd.conf"
+-#define LDAPD_USER		 "_ldapd"
++#define LDAPD_USER		 "ldapd"
+ #define LDAPD_SOCKET		 "/var/run/ldapd.sock"
+-#define DATADIR			 "/var/db/ldap"
++#define DATADIR			 "/var/lib/ldapd"
+ #define LDAP_PORT		 389
+ #define LDAPS_PORT		 636
+ #define LDAPD_SESSION_TIMEOUT	 30

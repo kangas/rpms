@@ -1,0 +1,192 @@
+                                     ldapd
+
+   I'm working on a small [1]LDAP daemon.
+
+License
+
+ /*
+  * Copyright (c) 2009, 2010 Martin Hedenfalk <martin@bzero.se>
+  *
+  * Permission to use, copy, modify, and distribute this software for any
+  * purpose with or without fee is hereby granted, provided that the above
+  * copyright notice and this permission notice appear in all copies.
+  *
+  * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+  * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+  * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+  * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+  * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+  */
+
+Status
+
+   This list is no longer maintained. For updates, see [2]cvs.
+
+   Data is stored in an append-only b-tree database format, supporting
+   lock-free reads (snapshots), hot backups and simple code. Data once
+   written is never modified, any changes are appended to end of the file,
+   thus minimizing the risk of a corrupt database. See the [3]btree(3) man
+   page or [4]this page for database implementation details.
+
+   Indices are supported, both equality, prefix and (non-numeric) ranges.
+
+   Schema files are parsed and object classes validated. Syntax or matching
+   rules are however not yet implemented. Currently, only case-insensitive
+   string compare is implemented.
+
+   The following methods are implemented: search, add, delete, modify, bind,
+   unbind, abandon and starttls.
+
+   SSL support is implemented, both StartTLS and ldaps. To create a
+   certificate, follow the instructions in [5]starttls(8), but replace 'mail'
+   with 'ldap'. ldapd looks for certificates in /var/ldap/certs.
+
+   The btree database implements a page cache. Several operations can be
+   grouped and committed together.
+
+   Simple authentication is implemented, so you can bind to the server to
+   check passwords. Currently SHA, SSHA and CRYPT passwords are supported.
+   The bind dn must exist in the tree and have a userPassword attribute.
+
+   SASL PLAIN authentication is also implemented. This means you can bind
+   with your regular BSD credentials.
+
+   The daemon forks into an unprivileged and chrooted child that handles all
+   communication with clients. The parent stays privileged and serves
+   authentication requests from children over the imsg framework.
+
+   A running ldapd can be controlled by the ldapctl utility.
+
+   Database compaction is performed online while ldapd is running. Modify
+   operations are queued while the database is compacted, but read operations
+   are unaffected.
+
+   One-level searches are implemented using an index on the parent RDN.
+
+   There is a simple access control scheme available to restrict access to
+   different parts of the namespace.
+
+   The schema checking can be turned off with a relax schema directive in the
+   namespace configuration. This way you can use ldapd as a general database
+   backend without having to write schema definitions. It's currently used
+   this way as backend store for [6]figr.org.
+
+   Reindexing the database is now integrated into [7]ldapctl(8). The command
+   ldapctl index reindexes all databases while [8]ldapd is running.
+
+   Entry compression has been implemented. Entries are compressed using zlib
+   before being stored in the btree. Depending on the data this can make more
+   entries fit in a single btree page, leading to fewer page reads and more
+   effective caching. Compression is disabled by default.
+
+Getting the code
+
+   ldapd is now [9]imported into OpenBSD. You can get ldapd from any of the
+   [10]anoncvs mirrors.
+
+   You can get the code via anonymous CVS:
+
+   $ export CVS_RSH=ssh
+   $ cvs -d anoncvs@anoncvs.eu.openbsd.org:/cvs co src/usr.sbin/ldapd
+   $ cvs -d anoncvs@anoncvs.eu.openbsd.org:/cvs co src/usr.sbin/ldapctl
+
+   To build, just run make (that would be BSD make, not GNU make):
+
+   $ cd ldapd
+   $ make obj clean depend all
+   $ sudo make install
+
+   This assumes you're running OpenBSD. For other systems, see the
+   [11]portable version.
+
+Setup
+
+   It needs an _ldapd user, and will chroot to the home directory of that
+   user. The following will create the required user:
+
+ # useradd -u 100 -g =uid -c "LDAP daemon" -d /var/db/ldap -s /sbin/nologin _ldapd
+ # mkdir /var/db/ldap
+ # chown _ldapd $_
+
+Manuals
+
+   [12]ldapd(8), [13]ldapd.conf(5), [14]ldapctl(8), [15]btree(3)
+
+   There is also an [16]explanation of how the append-only btree works.
+
+Portability
+
+   Not using OpenBSD, eh?
+
+   I've begun maintaining a portable version. It is available on bitbucket
+   with mercurial:
+
+   $ hg clone http://bitbucket.org/bzero/ldapd-portable
+
+   Alternatively, you can [17]download a tarball from the [18]bitbucket page.
+
+   To build the portable version, just configure and make:
+
+   $ cd ldapd-portable
+   $ ./bootstrap
+   $ ./configure
+   $ make
+   $ sudo make install
+
+   This has been tested on a recent Ubuntu and Mac OS X 10.6.
+
+   Please note that this version may not always be up to date with the
+   OpenBSD tree.
+
+   You also need to setup an _ldapd user like above. Consult your operating
+   system manuals for help with adding users.
+
+Feedback
+
+   Feedback and patches (cvs diff -u please!) appreciated! Mail me at
+   [19]martin@bzero.se.
+
+   As usual, if you're an evil spammer, you're more than welcome to mail me
+   at [20]nonham@bzero.se instead.
+
+Recommended reading
+
+     * [21]LDAP RFCs
+     * [22]Bayer, R. and Unterauer, K. 1977. Prefix B-trees ([23]feeling
+       lucky?)
+     * [24]The Power of B-Trees, from the CouchDB book
+     * [25]Rodeh, O. (2007) B-trees, Shadowing, and Clones
+     * [26]Jannink, J. (1995) Implementing Deletion in B+-trees. Technical
+       Report. Stanford InfoLab.
+
+References
+
+   Visible links
+   1. http://en.wikipedia.org/wiki/LDAP
+   2. http://www.openbsd.org/cgi-bin/cvsweb/src/usr.sbin/ldapd/
+   3. http://www.bzero.se/ldapd/btree.3.html
+   4. http://www.bzero.se/ldapd/btree.html
+   5. http://www.openbsd.org/cgi-bin/man.cgi?query=starttls
+   6. http://figr.org/
+   7. http://www.openbsd.org/cgi-bin/man.cgi?query=ldapctl
+   8. http://www.openbsd.org/cgi-bin/man.cgi?query=ldapd
+   9. http://www.undeadly.org/cgi?action=article&sid=20100609125908
+  10. http://openbsd.org/anoncvs.html#CVSROOT
+  11. http://www.bzero.se/ldapd/#portable
+  12. http://www.openbsd.org/cgi-bin/man.cgi?query=ldapd
+  13. http://www.openbsd.org/cgi-bin/man.cgi?query=ldapd.conf
+  14. http://www.openbsd.org/cgi-bin/man.cgi?query=ldapctl
+  15. http://www.bzero.se/ldapd/btree.3.html
+  16. http://www.bzero.se/ldapd/btree.html
+  17. http://bitbucket.org/bzero/ldapd-portable/get/tip.tar.gz
+  18. http://bitbucket.org/bzero/ldapd-portable
+  19. mailto:martin@bzero.se
+  20. mailto:nonham@bzero.se
+  21. http://en.wikipedia.org/wiki/LDAP#RFCs
+  22. http://portal.acm.org/citation.cfm?id=320530
+  23. http://www.google.com/search?&q=prefix+b-trees+pdf&btnI
+  24. http://books.couchdb.org/relax/appendix/btrees
+  25. http://www.cs.tau.ac.il/~ohadrode/papers/btree_TOS.pdf
+  26. http://ilpubs.stanford.edu:8090/85/

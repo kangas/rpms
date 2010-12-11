@@ -3,3 +3,4 @@
 *.rpm
 *.swp
 build
+tmp

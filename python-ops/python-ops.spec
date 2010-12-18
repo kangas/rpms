@@ -13,6 +13,7 @@ Source0:        https://github.com/downloads/opsdojo/ops/ops-%{version}.tar.bz2
 BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-nose
+BuildRequires:  python-sphinx
 
 %description
 ops is a collection Python modules for data center automation.
@@ -22,6 +23,7 @@ ops is a collection Python modules for data center automation.
 
 %build
 %{__python} setup.py build
+pushd docs; make html; popd
 
 %install
 %{__python} setup.py install -O1 --skip-build --root %{buildroot}
@@ -31,7 +33,7 @@ nosetests
 
 %files
 %defattr(-,root,root,-)
-%doc LICENSE README.md
+%doc LICENSE README.md docs/build/html
 %{python_sitelib}/%{realname}
 %{python_sitelib}/%{realname}-%{version}-py*.egg-info
 

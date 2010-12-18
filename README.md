@@ -4,4 +4,6 @@ rpms
 RPMs that have been accepted into Fedora are generally only updated in their
 Fedora repository.
 
-See http://pkgs.fedoraproject.org/gitweb/
+See their [gitweb][gitweb] page (very larage).
+
+[gitweb]: http://pkgs.fedoraproject.org/gitweb/

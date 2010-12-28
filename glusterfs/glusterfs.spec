@@ -213,9 +213,6 @@ sed -i 's|option working-directory /etc/glusterd|option working-directory %{_sha
 %doc ChangeLog COPYING INSTALL README THANKS
 %config(noreplace) %{_sysconfdir}/logrotate.d/glusterd
 %config(noreplace) %{_sysconfdir}/sysconfig/glusterd
-%if 0%{?_with_fusermount:1}
-%{_bindir}/fusermount-glusterfs
-%endif
 %{_datadir}/glusterfs
 %{_bindir}/glusterfs-volgen
 %{_libdir}/glusterfs

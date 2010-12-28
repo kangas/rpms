@@ -1,0 +1,8 @@
+# Change the glusterd service defaults here.
+# See "glusterd --help" outpout for defaults and possible values.
+
+#GLUSTERFSD_CONFIG="/etc/gluster/glusterd.vol"
+#GLUSTERFSD_LOGFILE="/var/log/gluster/gluster.log"
+#GLUSTERFSD_LOGLEVEL="NORMAL"
+#GLUSTERFSD_NOFILE="65536"
+

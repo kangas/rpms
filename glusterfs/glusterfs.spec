@@ -1,149 +1,164 @@
-#define pre rc8
-## NOTE: Lots of files in various subdirectories have the same name (such as
-## "LICENSE") so this short macro allows us to distinguish them by using their
-## directory names (from the source tree) as prefixes for the files.
-## Usage: add_to_doc_files subdirname files
-%define add_to_doc_files() \
-%{__mkdir_p} %{buildroot}%{_docdir}/%{name}-%{version}/%1 ||: ; \
-%{__cp} -p %2 %{buildroot}%{_docdir}/%{name}-%{version}/%1 
+%global major_minor 3.1
 
-# Possible rpmbuild options
-%{?_without_ibverbs:%define _without_ibverbs --disable-ibverbs}
-%{?_without_client:%define _without_client --disable-fuse-client}
-%{?_without_python:%define _without_python --disable-python}
+Name:             glusterfs
+Version:          %{major_minor}.1
+Release:          1%{?dist}
+Summary:          Clustered file-system
 
-Summary: 	GlusterFS - Cluster File System
-Name: 		glusterfs
-Version: 	3.0.7
-Release: 	1%{?pre:.%{pre}}%{?dist}
-License: 	GPLv3+
-Group: 		System Environment/Base
-URL: 		http://www.gluster.org/
-Source0: 	http://ftp.gluster.com/pub/gluster/glusterfs/3.0/%{version}/glusterfs-%{version}%{?pre}.tar.gz
-Source1: 	glusterfsd.init
-Source2: 	glusterfsd.sysconfig
-Source3: 	umount.glusterfs
-Source4: 	glusterfs.logrotate
-Source5: 	glusterfsd.logrotate
-BuildRoot: 	%{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-Requires(post): /sbin/chkconfig
-Requires(preun): /sbin/service, /sbin/chkconfig
+Group:            System Environment/Base
+License:          AGPLv3
+URL:              http://www.gluster.org/
+Source0:          http://download.gluster.com/pub/gluster/glusterfs/%{major_minor}/%{version}/glusterfs-%{version}.tar.gz
+Source1:          glusterd.init
+Source2:          glusterd.sysconfig
+Source3:          umount.glusterfs
+Source4:          glusterfs-fuse.logrotate
+Source5:          glusterd.logrotate
+# Legacy server
+Source11:         glusterfsd.init
+Source12:         glusterfsd.sysconfig
+Source15: 	      glusterfsd.logrotate
+
+BuildRequires:    bison
+BuildRequires:    flex
+BuildRequires:    gcc
+BuildRequires:    make
+
+Requires(post):   /sbin/chkconfig
+Requires(preun):  /sbin/service
+Requires(preun):  /sbin/chkconfig
 Requires(postun): /sbin/service
-%{!?_without_ibverbs:BuildRequires: libibverbs-devel}
-%{!?_without_client:BuildRequires: fuse-devel}
-%{!?_without_python:BuildRequires: python-devel >= 2.4}
-BuildRequires: 	flex, bison, byacc
+
+Obsoletes:        %{name}-libs <= 2.0.0
+Obsoletes:        %{name}-common < 3.1.0
+Provides:         %{name}-libs = %{version}-%{release}
+Provides:         %{name}-common = %{version}-%{release}
 
 %description
 GlusterFS is a clustered file-system capable of scaling to several
-peta-bytes. It aggregates various storage bricks over Infiniband RDMA
+petabytes. It aggregates various storage bricks over Infiniband RDMA
 or TCP/IP interconnect into one large parallel network file
 system. GlusterFS is one of the most sophisticated file systems in
 terms of features and extensibility.  It borrows a powerful concept
 called Translators from GNU Hurd kernel. Much of the code in GlusterFS
-is in userspace and easily manageable.
+is in user space and easily manageable.
 
+This package includes the glusterfs binary, the glusterfsd daemon and the
+gluster command line, libglusterfs and glusterfs translator modules common to
+both GlusterFS server and client framework.
 
-%package common
-Summary: 	GlusterFS common files for both the client and the server
-Group: 		System Environment/Libraries
-Obsoletes: 	glusterfs-libs < 2.0.0
-Provides: 	glusterfs-libs >= %{version}-%{release}
+%package rdma
+Summary:          Support for ib-verbs
+Group:            Applications/File
+Requires:         %{name} = %{version}-%{release}
+BuildRequires:    libibverbs-devel
 
-%description common
+%description rdma
 GlusterFS is a clustered file-system capable of scaling to several
-peta-bytes. It aggregates various storage bricks over Infiniband RDMA
+petabytes. It aggregates various storage bricks over Infiniband RDMA
 or TCP/IP interconnect into one large parallel network file
 system. GlusterFS is one of the most sophisticated file systems in
 terms of features and extensibility.  It borrows a powerful concept
 called Translators from GNU Hurd kernel. Much of the code in GlusterFS
-is in userspace and easily manageable.
+is in user space and easily manageable.
 
-This package includes the glusterfs binary, libglusterfs and glusterfs
-translator modules common to both GlusterFS server and client framework.
+This package provides support to ib-verbs library.
 
+%package fuse
+Summary:          Fuse client
+Group:            Applications/File
+Requires:         %{name} = %{version}-%{release}
+Obsoletes:        %{name}-client < 3.1.0
+Provides:         %{name}-client = %{version}-%{release}
 
-%package client
-Summary: 	GlusterFS Client
-Group: 		Applications/File
-Requires: 	fuse
-Requires: 	%{name}-common = %{version}-%{release}
-
-%description client
+%description fuse
 GlusterFS is a clustered file-system capable of scaling to several
-peta-bytes. It aggregates various storage bricks over Infiniband RDMA
+petabytes. It aggregates various storage bricks over Infiniband RDMA
 or TCP/IP interconnect into one large parallel network file
 system. GlusterFS is one of the most sophisticated file systems in
 terms of features and extensibility.  It borrows a powerful concept
 called Translators from GNU Hurd kernel. Much of the code in GlusterFS
-is in userspace and easily manageable.
+is in user space and easily manageable.
 
-This package provides the FUSE based GlusterFS client.
-
+This package provides support to FUSE based clients.
 
 %package server
-Summary: 	GlusterFS Server
-Group: 		System Environment/Daemons
-Requires: 	%{name}-common = %{version}-%{release}
+Summary:          Clustered file-system server
+Group:            System Environment/Daemons
+Requires:         %{name} = %{version}-%{release}
 
 %description server
 GlusterFS is a clustered file-system capable of scaling to several
-peta-bytes. It aggregates various storage bricks over Infiniband RDMA
+petabytes. It aggregates various storage bricks over Infiniband RDMA
 or TCP/IP interconnect into one large parallel network file
 system. GlusterFS is one of the most sophisticated file systems in
 terms of features and extensibility.  It borrows a powerful concept
 called Translators from GNU Hurd kernel. Much of the code in GlusterFS
-is in userspace and easily manageable.
+is in user space and easily manageable.
 
 This package provides the glusterfs server daemon.
 
-%package devel
-Summary: 	GlusterFS Development Libraries
-Group: 		Development/Libraries
-Requires: 	%{name}-common = %{version}-%{release}
+%package vim
+Summary:        Vim syntax file
+Group:          Applications/Text
+Requires:       vim-common
 
-%description devel
+%description vim
 GlusterFS is a clustered file-system capable of scaling to several
-peta-bytes. It aggregates various storage bricks over Infiniband RDMA
+petabytes. It aggregates various storage bricks over Infiniband RDMA
 or TCP/IP interconnect into one large parallel network file
 system. GlusterFS is one of the most sophisticated file systems in
 terms of features and extensibility.  It borrows a powerful concept
 called Translators from GNU Hurd kernel. Much of the code in GlusterFS
-is in userspace and easily manageable.
+is in user space and easily manageable.
+
+Vim syntax file for GlusterFS.
+
+%package devel
+Summary:        Development Libraries
+Group:          Development/Libraries
+Requires:       %{name} = %{version}-%{release}
+
+%description devel
+GlusterFS is a clustered file-system capable of scaling to several
+petabytes. It aggregates various storage bricks over Infiniband RDMA
+or TCP/IP interconnect into one large parallel network file
+system. GlusterFS is one of the most sophisticated file systems in
+terms of features and extensibility.  It borrows a powerful concept
+called Translators from GNU Hurd kernel. Much of the code in GlusterFS
+is in user space and easily manageable.
 
 This package provides the development libraries.
 
-
 %prep
-%setup -q -n %{name}-%{version}%{?pre}
-# Remove file, it gets re-generated by bison (was causing koji build failures)
-rm -f libglusterfs/src/y.tab.c
-# Don't get executable sources in the debuginfo package (as of 2.0.0rc7)
-chmod -x libglusterfsclient/src/*.{c,h}
-
+%setup -q
 
 %build
-# Temp disable stack-protector until upstream fixes code
-CFLAGS=`echo "%optflags"|sed 's/-D_FORTIFY_SOURCE=2/-D_FORTIFY_SOURCE=1/'`
-%configure %{?_without_ibverbs} %{?_without_client} %{?_without_python}
+%configure
+
 # Remove rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
-
 %{__make} %{?_smp_mflags}
 
-
 %install
-%{__rm} -rf %{buildroot} examples
 %{__make} install DESTDIR=%{buildroot}
-%{__mkdir_p} %{buildroot}/var/log/glusterfs
+
+# We'll use our init.d
+%{__rm} -f %{buildroot}%{_sysconfdir}/init.d/glusterd
+
+# Install include directory
 %{__mkdir_p} %{buildroot}%{_includedir}/glusterfs
+%{__mkdir_p} %{buildroot}%{_localstatedir}/log/glusterd
+%{__mkdir_p} %{buildroot}%{_localstatedir}/log/glusterfs
+%{__mkdir_p} %{buildroot}%{_localstatedir}/log/glusterfsd
 %{__install} -p -m 0644 libglusterfs/src/*.h \
     %{buildroot}%{_includedir}/glusterfs/
 
-# Remove unwanted files from all of the shared libraries
-find %{buildroot}%{_libdir}/glusterfs -name '*.a' -o -name '*.la' | xargs rm -f
+# Remove unwanted files from all the shared libraries
+find %{buildroot}%{_libdir} -name '*.a' -delete
+find %{buildroot}%{_libdir} -name '*.la' -delete
 
 # Remove installed docs, we include them ourselves as %%doc
 %{__rm} -rf %{buildroot}%{_datadir}/doc/glusterfs/
@@ -153,97 +168,138 @@ for file in %{buildroot}%{_sysconfdir}/glusterfs/*.sample; do
   %{__mv} ${file} `dirname ${file}`/`basename ${file} .sample`
 done
 
+# Create working directory
+%{__mkdir_p} %{buildroot}%{_sharedstatedir}/glusterd
+
+# Update configuration file to /var/lib working directory
+sed -i 's|option working-directory /etc/glusterd|option working-directory %{_sharedstatedir}/glusterd|g' \
+    %{buildroot}%{_sysconfdir}/glusterfs/glusterd.vol
+
 # Clean up the examples we want to include as %%doc
 %{__cp} -a doc/examples examples
 %{__rm} -f examples/Makefile*
 
 # Install init script and sysconfig file
 %{__install} -D -p -m 0755 %{SOURCE1} \
-    %{buildroot}%{_sysconfdir}/init.d/glusterfsd
+    %{buildroot}%{_initddir}/glusterd
 %{__install} -D -p -m 0644 %{SOURCE2} \
+    %{buildroot}%{_sysconfdir}/sysconfig/glusterd
+# Legacy init script and sysconfig file
+%{__install} -D -p -m 0755 %{SOURCE11} \
+    %{buildroot}%{_initddir}/glusterfsd
+%{__install} -D -p -m 0644 %{SOURCE12} \
     %{buildroot}%{_sysconfdir}/sysconfig/glusterfsd
 
-%if 0%{!?_without_client:1}
 # Install wrapper umount script
 %{__install} -D -p -m 0755 %{SOURCE3} \
     %{buildroot}/sbin/umount.glusterfs
 # Client logrotate entry
 %{__install} -D -p -m 0644 %{SOURCE4} \
-    %{buildroot}%{_sysconfdir}/logrotate.d/glusterfs
-%endif
+    %{buildroot}%{_sysconfdir}/logrotate.d/glusterfs-fuse
 
 # Server logrotate entry
 %{__install} -D -p -m 0644 %{SOURCE5} \
+    %{buildroot}%{_sysconfdir}/logrotate.d/glusterd
+# Legacy server logrotate entry
+%{__install} -D -p -m 0644 %{SOURCE15} \
     %{buildroot}%{_sysconfdir}/logrotate.d/glusterfsd
 
-# Install extra documentation
-%add_to_doc_files benchmarking extras/benchmarking/{*.c,README,*.sh}
+# Install vim syntax plugin
+%{__install} -D -p -m 644 extras/glusterfs.vim \
+    %{buildroot}%{_datadir}/vim/vimfiles/syntax/glusterfs.vim
 
+%files
+%defattr(-,root,root,-)
+%doc ChangeLog COPYING INSTALL README THANKS
+%config(noreplace) %{_sysconfdir}/logrotate.d/glusterd
+%config(noreplace) %{_sysconfdir}/sysconfig/glusterd
+%if 0%{?_with_fusermount:1}
+%{_bindir}/fusermount-glusterfs
+%endif
+%{_datadir}/glusterfs
+%{_bindir}/glusterfs-volgen
+%{_libdir}/glusterfs
+%{_libdir}/*.so.*
+%{_sbindir}/glusterfs*
+%{_bindir}/glusterfs-defrag
+%{_sbindir}/gluster
+%{_sbindir}/glusterd
+%{_mandir}/man8/*glusterfs.8*
+%{_mandir}/man8/*gluster.8*
+%{_mandir}/man8/*glusterd.8*
+%{_mandir}/man8/*glusterfs-volgen.8*
+%dir %{_localstatedir}/log/glusterfs
+%exclude %{_libdir}/glusterfs/%{version}/rpc-transport/rdma*
+%exclude %{_libdir}/glusterfs/%{version}/xlator/mount/fuse*
 
-%clean
-%{__rm} -rf %{buildroot}
+%files rdma
+%defattr(-,root,root,-)
+%{_libdir}/glusterfs/%{version}/rpc-transport/rdma*
 
+%files fuse
+%defattr(-,root,root,-)
+%config(noreplace) %{_sysconfdir}/logrotate.d/glusterfs-fuse
+%{_libdir}/glusterfs/%{version}/xlator/mount/fuse*
+%{_mandir}/man8/mount.glusterfs.8*
+/sbin/mount.glusterfs
+/sbin/umount.glusterfs
 
-%post common -p /sbin/ldconfig
+%files server
+%doc examples/ doc/glusterfs*.vol.sample
+%config(noreplace) %{_sysconfdir}/logrotate.d/glusterd
+%config(noreplace) %{_sysconfdir}/sysconfig/glusterd
+%config(noreplace) %{_sysconfdir}/glusterfs
+# Legacy configs
+%config(noreplace) %{_sysconfdir}/logrotate.d/glusterfsd
+%config(noreplace) %{_sysconfdir}/sysconfig/glusterfsd
+%{_localstatedir}/lib/glusterd
+%{_initddir}/glusterd
+# Legacy init
+%{_initddir}/glusterfsd
 
-%postun common -p /sbin/ldconfig
+%files vim
+%defattr(-,root,root,-)
+%doc COPYING
+%{_datadir}/vim/vimfiles/syntax/glusterfs.vim
 
+%files devel
+%{_includedir}/glusterfs
+%exclude %{_includedir}/glusterfs/y.tab.h
+%{_libdir}/*.so
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
 
 %post server
+/sbin/chkconfig --add glusterd
+
+# Legacy server
 /sbin/chkconfig --add glusterfsd
 
 %preun server
 if [ $1 -eq 0 ]; then
+    /sbin/service glusterd stop &>/dev/null || :
+    /sbin/chkconfig --del glusterd
+fi
+if [ $1 -ge 1 ]; then
+    /sbin/service glusterd condrestart &>/dev/null || :
+fi
+
+# Legacy server
+if [ $1 -eq 0 ]; then
     /sbin/service glusterfsd stop &>/dev/null || :
     /sbin/chkconfig --del glusterfsd
 fi
-
-%postun server
 if [ $1 -ge 1 ]; then
     /sbin/service glusterfsd condrestart &>/dev/null || :
 fi
 
-
-%files common
-%doc AUTHORS ChangeLog COPYING NEWS README extras/{glusterfs-mode.el,glusterfs.vim}
-%{_docdir}/%{name}-%{version}/benchmarking
-%{_libdir}/glusterfs/
-%{_libdir}/*.so.*
-%{_sbindir}/glusterfs
-%{_sbindir}/glusterfsd
-%{_mandir}/man8/glusterfs.8*
-%dir %{_sysconfdir}/glusterfs/
-%dir /var/log/glusterfs/
-
-
-%if 0%{!?_without_client:1}
-%files client
-%config(noreplace) %{_sysconfdir}/logrotate.d/glusterfs
-/sbin/mount.glusterfs
-/sbin/umount.glusterfs
-%{_mandir}/man8/mount.glusterfs.8*
-%endif
-
-
-%files server
-%doc examples/ doc/glusterfs*.vol.sample
-%config(noreplace) %{_sysconfdir}/glusterfs/*.vol
-%config(noreplace) %{_sysconfdir}/logrotate.d/glusterfsd
-%config(noreplace) %{_sysconfdir}/sysconfig/glusterfsd
-%{_sysconfdir}/init.d/glusterfsd
-
-
-%files devel
-%{_includedir}/glusterfs/
-%{_includedir}/libglusterfsclient.h
-%{_datadir}/glusterfs/*
-%{_bindir}/glusterfs-volgen
-%exclude %{_libdir}/*.a
-%exclude %{_libdir}/*.la
-%{_libdir}/*.so
-
-
 %changelog
+* Mon Dec 27 2010 Silas Sewell <silas@sewell.ch> - 3.1.1-1
+- Update to 3.1.1
+- Change package names to mirror upstream
+
 * Mon Dec 20 2010 Jonathan Steffan <jsteffan@fedoraproject.org> - 3.0.7-1
 - Update to 3.0.7
 
@@ -388,4 +444,3 @@ fi
 
 * Sun Jul 15 2007 Matt Paine <matt@mattsoftware.com> - 1.3.pre6
 - Initial spec file
-

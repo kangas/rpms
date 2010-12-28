@@ -17,7 +17,7 @@ Source5:          glusterd.logrotate
 # Legacy server
 Source11:         glusterfsd.init
 Source12:         glusterfsd.sysconfig
-Source15: 	      glusterfsd.logrotate
+Source15:         glusterfsd.logrotate
 
 BuildRequires:    bison
 BuildRequires:    flex

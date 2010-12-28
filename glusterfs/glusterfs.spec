@@ -50,8 +50,9 @@ both GlusterFS server and client framework.
 %package rdma
 Summary:          Support for ib-verbs
 Group:            Applications/File
-Requires:         %{name} = %{version}-%{release}
 BuildRequires:    libibverbs-devel
+
+Requires:         %{name} = %{version}-%{release}
 
 %description rdma
 GlusterFS is a clustered file-system capable of scaling to several
@@ -67,7 +68,10 @@ This package provides support to ib-verbs library.
 %package fuse
 Summary:          Fuse client
 Group:            Applications/File
+BuildRequires:    fuse-devel
+
 Requires:         %{name} = %{version}-%{release}
+
 Obsoletes:        %{name}-client < 3.1.0
 Provides:         %{name}-client = %{version}-%{release}
 
@@ -249,7 +253,7 @@ sed -i 's|option working-directory /etc/glusterd|option working-directory %{_sha
 # Legacy configs
 %config(noreplace) %{_sysconfdir}/logrotate.d/glusterfsd
 %config(noreplace) %{_sysconfdir}/sysconfig/glusterfsd
-%{_localstatedir}/lib/glusterd
+%{_sharedstatedir}/glusterd
 %{_initddir}/glusterd
 # Legacy init
 %{_initddir}/glusterfsd

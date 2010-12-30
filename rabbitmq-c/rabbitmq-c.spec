@@ -1,23 +1,18 @@
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()")}
+%global changeset 5ff94810e908
 
 Name:             rabbitmq-c
-Version:          0.0.0
-Release:          1%{?dist}
+Version:          0
+Release:          0.1.%{changeset}%{?dist}
 Summary:          RabbitMQ C client
 
 Group:            Development/Libraries
 License:          MPLv1.1
 URL:              http://hg.rabbitmq.com/rabbitmq-c
-# hg clone http://hg.rabbitmq.com/rabbitmq-c rabbitmq-c-0.0.0
-# hg clone http://hg.rabbitmq.com/rabbitmq-codegen rabbitmq-c-0.0.0/codegen
-# tar -czf rabbitmq-c-0.0.0.tar.gz rabbitmq-c-0.0.0/
-Source0:          rabbitmq-c-%{version}.tar.gz
-Patch0:           rabbitmq-c-0.0.0-python.patch
-BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+Source0:          http://hg.rabbitmq.com/rabbitmq-c/archive/%{changeset}.tar.bz2
 
 BuildRequires:    autoconf
 BuildRequires:    libtool
-BuildRequires:    python
+BuildRequires:    rabbitmq-codegen
 
 %description
 A RabbitMQ C client.
@@ -28,45 +23,40 @@ Group:            Development/Libraries
 Requires:         %{name} = %{version}-%{release}
 
 %description      devel
-Tokyo Tyrant is a network interface to Tokyo Cabinet.
+A RabbitMQ C client.
 
 The %{name}-devel package contains libraries and header files for
 developing applications that use %{name}.
 
 %prep
-%setup -q
-# Fix python name (python2.5 => python)
-%patch0 -p1
+%setup -q -n %{name}-%{changeset}
 
 %build
+ln -s %{_datarootdir}/rabbitmq-codegen codegen
 autoreconf -i
 %configure
 %{__make} %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
 %{__make} DESTDIR=%{buildroot} install
 # Remove misc files
 %{__rm} -f %{buildroot}%{_libdir}/librabbitmq.a
 %{__rm} -f %{buildroot}%{_libdir}/librabbitmq.la
-
-%clean
-rm -rf %{buildroot}
 
 %post -p /sbin/ldconfig
 %postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
-%doc AUTHORS COPYING README
-%{_bindir}/amqp_*
+%doc AUTHORS COPYING LICENSE-GPL-2.0 LICENSE-MPL-RabbitMQ README
 %{_libdir}/librabbitmq.so.*
 
 %files devel
+%defattr(-,root,root,-)
 %doc TODO
 %{_includedir}/amqp*.h
 %{_libdir}/librabbitmq.so
 
 %changelog
-* Wed Aug 19 2009 Silas Sewell <silas@sewell.ch> - 0.0.0-1
+* Wed Dec 29 2010 Silas Sewell <silas@sewell.ch> - 0-0.1.5ff94810e908
 - Initial build

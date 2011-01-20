@@ -1,0 +1,12 @@
+diff -up txmongo-0.3/setup.py.orig txmongo-0.3/setup.py
+--- txmongo-0.3/setup.py.orig	2011-01-20 14:10:07.743022706 -0500
++++ txmongo-0.3/setup.py	2011-01-20 14:10:35.484927005 -0500
+@@ -69,7 +69,7 @@ although they do result in significant s
+ c_ext = Feature(
+     "optional C extension",
+     standard=True,
+-    ext_modules=[Extension('pymonga._pymongo._cbson',
++    ext_modules=[Extension('txmongo._pymongo._cbson',
+                             include_dirs=['txmongo/_pymongo'],
+                             sources=['txmongo/_pymongo/_cbsonmodule.c',
+                                      'txmongo/_pymongo/time_helpers.c',

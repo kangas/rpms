@@ -8,7 +8,7 @@ Summary:        A web framework based on Twisted
 Group:          Development/Languages
 License:        ASL 2.0
 URL:            https://github.com/silas/huck
-Source0:        https://github.com/downloads/silas/huck/huck-%{version}.tar.bz2
+Source0:        http://pypi.python.org/packages/source/h/huck/huck-%{version}.tar.bz2
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildArch:      noarch

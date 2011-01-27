@@ -8,7 +8,7 @@ Summary:        Python modules and tools for system applications
 Group:          Development/Languages
 License:        MIT
 URL:            https://github.com/opsdojo/ops
-Source0:        https://github.com/downloads/opsdojo/ops/ops-%{version}.tar.bz2
+Source0:        http://pypi.python.org/packages/source/o/ops/ops-%{version}.tar.bz2
 
 BuildArch:      noarch
 BuildRequires:  python-devel

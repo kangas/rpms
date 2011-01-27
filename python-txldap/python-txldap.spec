@@ -8,7 +8,7 @@ Summary:        Twisted wrapper for python-ldap
 Group:          Development/Languages
 License:        MIT
 URL:            https://github.com/silas/txldap
-Source0:        https://github.com/downloads/silas/txldap/txldap-%{version}.tar.bz2
+Source0:        http://pypi.python.org/packages/source/t/txldap/txldap-%{version}.tar.bz2
 
 BuildArch:      noarch
 BuildRequires:  python-devel

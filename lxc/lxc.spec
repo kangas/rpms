@@ -1,13 +1,12 @@
 Name:           lxc
-Version:        0.7.2
-Release:        2%{?dist}
+Version:        0.7.3
+Release:        1%{?dist}
 Summary:        Linux Resource Containers
 
 Group:          Applications/System
 License:        LGPLv2+
 URL:            http://lxc.sourceforge.net
 Source0:        http://lxc.sourceforge.net/download/lxc/%{name}-%{version}.tar.gz
-Patch0:         lxc-0.7.2-fix-debian-template.patch
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  automake
@@ -101,13 +100,14 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %doc AUTHORS COPYING
 %dir %{_libdir}/lxc
+%dir %{_libdir}/lxc/templates
 %{_libdir}/liblxc.so.*
 %{_libdir}/lxc/lxc-init
 %{_libdir}/lxc/rootfs
 
 %files templates
 %defattr(-,root,root,-)
-%{_libdir}/lxc/templates
+%{_libdir}/lxc/templates/lxc-*
 
 %files devel
 %defattr(-,root,root,-)
@@ -120,8 +120,8 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}
 
 %changelog
-* Tue Aug 31 2010 Silas Sewell <silas@sewell.ch> - 0.7.2-2
-- Add templates back with patches
+* Sat Jan 08 2011 Silas Sewell <silas@sewell.ch> - 0.7.3-1
+- Update to latest version
 
 * Mon Jul 26 2010 Silas Sewell <silas@sewell.ch> - 0.7.2-1
 - Update to 0.7.2

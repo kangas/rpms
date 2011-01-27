@@ -61,6 +61,7 @@ Group:            Applications/System
 Requires:         PyXML
 Requires:         curl
 Requires:         m2crypto
+Requires:         python-anyjson
 Requires:         python-IPy
 Requires:         python-boto
 Requires:         python-carrot

@@ -1,13 +1,17 @@
 %if 0%{?fedora} > 12
-%global with_csharp 0
+%global with_csharp 1
 %global with_ghc 1
 %global with_java 1
+%global with_perl 1
 %global with_php 1
+%global with_ruby 1
 %else
 %global with_csharp 0
 %global with_ghc 0
 %global with_java 0
+%global with_perl 0
 %global with_php 0
+%global with_ruby 0
 %endif
 
 # Erlang
@@ -42,7 +46,7 @@ Summary:          A multi-language RPC and serialization framework
 Group:            System Environment/Libraries
 License:          ASL 2.0
 URL:              http://incubator.apache.org/thrift
-Source0:          http://www.apache.org/dist//incubator/thrift/%{version}-incubating/thrift-%{version}.tar.gz
+Source0:          http://www.apache.org/dist/incubator/thrift/%{version}-incubating/thrift-%{version}.tar.gz
 Source1:          thrift_protocol.ini
 Patch0:           thrift-0.5.0-noivy.patch
 BuildRoot:        %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -51,10 +55,18 @@ BuildRequires:    byacc
 BuildRequires:    boost-devel >= 1.33.1
 BuildRequires:    dos2unix
 BuildRequires:    flex
-BuildRequires:    libevent-devel
+# BuildRequires:    libevent-devel
 BuildRequires:    libtool
-BuildRequires:    mono-devel >= 1.2.6
 BuildRequires:    zlib-devel
+
+AutoReq: 0
+AutoProv: 0
+BuildRequires:    daylife-vendor-libevent
+BuildRequires:    daylife-vendor-python2.6
+Requires:    daylife-vendor-libevent
+Requires:    daylife-vendor-python2.6
+Requires:    daylife-vendor-java
+Requires:    boost >= 1.33.1
 
 %description
 Thrift is a software framework for scalable cross-language services
@@ -83,6 +95,7 @@ developing applications that use %{name}.
 %package csharp
 Summary:          C# bindings for %{name}
 Group:            Development/Libraries
+BuildRequires:    mono-devel >= 1.2.6
 # sparc64 doesn't have mono
 ExcludeArch:      sparc64
 
@@ -182,6 +195,7 @@ BuildRequires:    java-1.6.0-openjdk-javadoc
 Javadoc for %{name}.
 %endif
 
+%if 0%{?with_perl}
 %package perl
 Summary:          Perl bindings for %{name}
 Group:            Development/Libraries
@@ -197,6 +211,7 @@ Provides:         perl(Thrift) = %{version}-%{release}
 
 %description perl
 Perl bindings for %{name}.
+%endif
 
 %if 0%{?with_php}
 %package php
@@ -216,11 +231,12 @@ PHP bindings for %{name}.
 %package python
 Summary:          Python bindings for %{name}
 Group:            Development/Libraries
-BuildRequires:    python-devel
+#BuildRequires:    python-devel
 
 %description python
 Python bindings for %{name}.
 
+%if 0%{?with_ruby}
 %package ruby
 Summary:          Ruby bindings for %{name}
 Group:            Development/Libraries
@@ -230,8 +246,10 @@ Requires:         ruby(abi) = 1.8
 
 %description ruby
 Ruby bindings for %{name}.
+%endif
 
 %prep
+#% daylife_prep thrift-0.5.0
 %setup -q
 %patch0 -p1
 
@@ -242,13 +260,21 @@ find tutorial/ -type f -exec chmod 0644 {} \;
 sed -i '/#/d;/^$/d' lib/hs/Setup.lhs
 
 %build
+%daylife_init
+
+PY_PREFIX=%{_prefix}; export PY_PREFIX;
+PYTHON=%{__python}; export PYTHON;
+
 %configure \
+  --without-csharp \
   --without-haskell \
   --without-java \
   --without-perl \
   --without-php \
+  --without-php_extension \
   --without-ruby \
   --enable-static=no
+
 %{__make} %{?_smp_mflags}
 
 # Build Haskell
@@ -265,11 +291,13 @@ ant dist javadoc -lib %{_javadir} -lib %{_javadir}/slf4j -Dnoivy=1
 popd
 %endif
 
+%if 0%{?with_perl}
 # Build Perl
 pushd lib/perl
 perl Makefile.PL
 %{__make} %{?_smp_mflags} CFLAGS="%{optflags}"
 popd
+%endif
 
 # Build PHP
 %if 0%{?with_php}
@@ -281,10 +309,12 @@ popd
 %endif
 
 # Build Ruby
+%if 0%{?with_ruby}
 pushd lib/rb
 ruby setup.rb config
 ruby setup.rb setup
 popd
+%endif
 
 %install
 %{__rm} -rf %{buildroot}
@@ -337,6 +367,7 @@ popd
 %endif
 
 # Install Perl
+%if 0%{?with_perl}
 pushd lib/perl
 %{__make} DESTDIR=%{buildroot} INSTALLSITELIB=%{perl_vendorlib} install
 popd
@@ -345,14 +376,17 @@ popd
 find %{buildroot} -type f -name .packlist -exec rm -f {} \;
 find %{buildroot} -type f -name perllocal.pod -exec rm -f {} \;
 find %{buildroot} -depth -type d -exec rmdir {} 2>/dev/null \;
+%endif
 
 # Install Ruby
+%if 0%{?with_ruby}
 pushd lib/rb
 ruby setup.rb install --prefix=%{buildroot}
 popd
 
 # Fix non-standard-executable-perm error
 %{__chmod} 0755 %{buildroot}%{ruby_sitearch}/thrift_native.so
+%endif
 
 %clean
 %{__rm} -rf %{buildroot}
@@ -440,10 +474,12 @@ fi
 %{_javadocdir}/thrift
 %endif
 
+%if 0%{?with_perl}
 %files perl
 %defattr(-,root,root,-)
 %doc lib/perl/README tutorial/perl tutorial/*.thrift
 %{perl_vendorlib}/Thrift*
+%endif
 
 %if 0%{?with_php}
 %files php
@@ -458,17 +494,20 @@ fi
 %defattr(-,root,root,-)
 %doc lib/py/README tutorial/py tutorial/*.thrift
 %{python_sitearch}/%{name}
-%if 0%{?fedora}  > 9
 %{python_sitearch}/Thrift-*.egg-info
-%endif
 
+%if 0%{?with_ruby}
 %files ruby
 %defattr(-,root,root,-)
 %doc lib/rb/CHANGELOG lib/rb/README tutorial/rb tutorial/*.thrift
 %{ruby_sitearch}/thrift_native.so
 %{ruby_sitelib}/thrift*
+%endif
 
 %changelog
+* Wed Feb 09 2011 Matt Kangas <matt@daylife.com> - 0.5.0-2
+- Updates for daylife-vendor
+
 * Tue Nov 02 2010 Silas Sewell <silas@sewell.ch> - 0.5.0-1
 - Update to 0.5.0
 
